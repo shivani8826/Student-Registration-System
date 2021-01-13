@@ -34,20 +34,25 @@ public class StudentCourseInfo {
       this.validityInDays=validityInDays;
     }
 
+    public StudentCourseInfo(){
+
+    }
+
+
     public Integer getStudentId() {
         return studentId;
     }
 
-    public void setStudent_Id(Integer studentId) {
-      this.studentId=studentId;
+    public void setStudentId(Integer studentId) {
+        this.studentId = studentId;
     }
 
     public Integer getCourseId() {
         return courseId;
     }
 
-    public void setCourse_Id(Integer courseId) {
-        this.courseId=courseId;
+    public void setCourseId(Integer courseId) {
+        this.courseId = courseId;
     }
 
     public Date getDateOfRegistration() {
@@ -55,7 +60,7 @@ public class StudentCourseInfo {
     }
 
     public void setDateOfRegistration(Date dateOfRegistration) {
-        this.dateOfRegistration=dateOfRegistration;
+        this.dateOfRegistration = dateOfRegistration;
     }
 
     public Integer getValidityInDays() {
@@ -63,10 +68,6 @@ public class StudentCourseInfo {
     }
 
     public void setValidityInDays(Integer validityInDays) {
-       this.validityInDays=validityInDays;
-    }
-
-    public StudentCourseInfo(){
-
+        this.validityInDays = validityInDays;
     }
 }

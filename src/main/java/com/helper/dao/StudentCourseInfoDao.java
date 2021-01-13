@@ -32,13 +32,13 @@ public class StudentCourseInfoDao {
         session.close();
     }
 
-    public List<CourseListResponse> getCourseId(Integer studentId) {
+    public List<CourseListResponse> getStudentIdNameDate(Integer studentId) {
 
         Session session = this.sessionFactory.openSession();
 
         String query = "select Course_Id ,Date_of_Registration from StudentCourseInfo where Student_Id = studentId";
         NativeQuery nq = session.createSQLQuery(query);
-        List<CourseListResponse> allCourses = nq.list();
+        List<CourseListResponse> allCourses = nq.list(); //giving error
 
         session.close();
         return allCourses;

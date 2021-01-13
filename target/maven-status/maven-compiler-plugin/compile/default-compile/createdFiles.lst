@@ -4,6 +4,7 @@ com/helper/dao/StudentCourseInfoDao.class
 ResponseEntity/GetStudentCred.class
 com/helper/dao/StudentCourseInfo.class
 com/helper/dao/CourseDetailDao.class
+ResponseEntity/ViewListResponse.class
 ResponseEntity/LoginResponse.class
 ResponseEntity/EachStudentCourseCred.class
 com/helper/dao/StudentInfoDao.class

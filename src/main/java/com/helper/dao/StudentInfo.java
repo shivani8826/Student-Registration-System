@@ -13,11 +13,14 @@ public class StudentInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int StudentID;
+    @Column(name = "StudentID")
+    private int studentId;
 
     private String email;
     private String firstName;
-    private String LastName;
+
+    @Column(name = "LastName")
+    private String lastName;
     private String password;
 
     public String getPassword() {
@@ -37,11 +40,11 @@ public class StudentInfo {
     }
 
     public int getStudentID() {
-        return StudentID;
+        return studentId;
     }
 
     public void setStudentID(int studentID) {
-        StudentID = studentID;
+        this.studentId = studentID;
     }
 
     public String getFirstName() {
@@ -53,17 +56,17 @@ public class StudentInfo {
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
     public StudentInfo( String email, String firstName, String lastName, String password) {
         this.email = email;
         this.firstName = firstName;
-        LastName = lastName;
+        this.lastName = lastName;
         this.password = password;
     }
 

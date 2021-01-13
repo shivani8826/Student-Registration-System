@@ -30,7 +30,7 @@ public class CourseDetailDao {
     {
         Session session=this.sessionFactory.openSession();
 
-        String query="select Course_Id AS Course_Id,Course_Name AS Course_Name from CourseDetails where isActive = 1";
+        String query="select Course_Id ,Course_Name from CourseDetails where isActive = 1";
         NativeQuery nq = session.createSQLQuery(query);
         List<CourseDetail> allCourses = nq.list();
 
@@ -44,7 +44,7 @@ public class CourseDetailDao {
         CourseDetail temp = (CourseDetail) session.get(CourseDetail.class,id);
         if(temp==null)
             return "null";
-        String course = temp.getCourse_Name();
+        String course = temp.getCourseName();
         session.close();
         return course;
     }

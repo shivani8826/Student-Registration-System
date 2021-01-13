@@ -46,54 +46,18 @@ public class StudentController {
     @RequestMapping(value = "user/course/register",method = RequestMethod.POST)
     public @ResponseBody
     CourseRegisteredResponse CoursesForRegistration(@RequestBody GetEachStudentCourseCred getEachStudentCourseCred) {
-        //return null;
         return serviceClass.saveCoursesOfEachStudent(getEachStudentCourseCred);
     }
 
 
-   /* @RequestMapping(value = "user/course/list",method = RequestMethod.POST)
+    @RequestMapping(value = "user/course/list",method = RequestMethod.POST)
     public @ResponseBody
-    CourseListResponse CoursesListDetails(@RequestBody GetStudentCred getStudentCred)
+    ViewListResponse CoursesListDetails(@RequestBody GetStudentCred getStudentCred)
     {
-        Integer id = getStudentCred.getId();
-        String password = getStudentCred.getPassword();
-
-        String passwordCheck =
-    }*/
+         return serviceClass.CoursesListDetails(getStudentCred);
+    }
 
 
 
 }
 
-
-
-
-
-
-
-    /*@RequestMapping("/user/options")
-    public String UserOptions(){
-        return "courseOptions";
-   }
-
-
-    @RequestMapping("user/course/register")
-    public ModelAndView registerCourses(@RequestParam List<String> courseList)
-    {
-        ModelAndView modelAndView=new ModelAndView();
-        modelAndView.setViewName("result.jsp");
-        modelAndView.addObject("ans",courseList);
-
-        return modelAndView;
-    }
-
-
-    @RequestMapping( "/user/registered")
-    public ModelAndView viewRegisteredCourses(@RequestParam List<String>list)
-    {
-        ModelAndView m = new ModelAndView("coursesRegistered");
-        m.addObject("list",list);
-        return m;
-    }
-*/
-//ModelAndView mav = new ModelAndView("jspfilekaname");

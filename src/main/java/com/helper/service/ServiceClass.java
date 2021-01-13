@@ -35,7 +35,7 @@ public class ServiceClass {
 
 
     public int getId(StudentInfo studentInfo) {
-        return studentInfoDao.getID(studentInfo);
+        return studentInfoDao.getId(studentInfo);
     }
 
 
@@ -111,38 +111,51 @@ public class ServiceClass {
    }
 
 
-   public CourseRegisteredResponse saveCoursesOfEachStudent(GetEachStudentCourseCred getStudentCourseCred)
-   {
-       Integer Student_Id = getStudentCourseCred.getStudentId();
-       Integer[] Course_Id = getStudentCourseCred.getCourseId();
+   public CourseRegisteredResponse  saveCoursesOfEachStudent(GetEachStudentCourseCred getStudentCourseCred) {
+       Integer studentId = getStudentCourseCred.getStudentId();
+       Integer[] courseId = getStudentCourseCred.getCourseId();
        Date date = getStudentCourseCred.getDateOfRegistration();
-       Integer Validity_in_Days = getStudentCourseCred.getValidityInDays();
+       Integer validityInDays = getStudentCourseCred.getValidityInDays();
 
-       List<String>courses=new ArrayList<>();
+       List<String> courses = new ArrayList<>();
 
-       for(int i=0;i<Course_Id.length;i++) {
-           Integer currentCourseId = Course_Id[i];
-           String course = courseDetailDao.getCourse(currentCourseId);
-           studentCourseInfoDao.save(new StudentCourseInfo(Student_Id, currentCourseId, date, Validity_in_Days));
-           courses.add(course);
+       try {
+
+           for (int i = 0; i < courseId.length; i++) {
+               Integer currentCourseId = courseId[i];
+               String course = courseDetailDao.getCourse(currentCourseId);
+
+               studentCourseInfoDao.save(new StudentCourseInfo(studentId, currentCourseId, date, validityInDays));
+
+               courses.add(course);
+           }
+           return new CourseRegisteredResponse("Courses Saved", "success", courses);
+
+       } catch (Exception e) {
+
+           return new CourseRegisteredResponse("Courses Not Saved","Failed",courses);
        }
-           return new CourseRegisteredResponse("Courses Saved","success",courses);
-
-
-          // return new CourseRegisteredResponse("Courses Not Saved","Failed",courses);
    }
 
-/*
-    public CourseListResponse CoursesListDetails(GetStudentCred getStudentCred)
+
+    public ViewListResponse CoursesListDetails(GetStudentCred getStudentCred)
     {
         Integer id = getStudentCred.getId();
         String password = getStudentCred.getPassword();
         String passwordCheck = studentInfoDao.getPassword(id);
+        List<CourseListResponse> listOfStudentCourseInfo=new ArrayList<>();
 
-        if(password.equals(passwordCheck))
-        {
-            return new CourseListResponse(
+        if(password.equals(passwordCheck)) {
+
+           listOfStudentCourseInfo = studentCourseInfoDao.getStudentIdNameDate(id);
+            return new ViewListResponse("success",listOfStudentCourseInfo);
+
         }
-    }*/
+        else
+        {
+            return new ViewListResponse("failed",listOfStudentCourseInfo);
+        }
+
+    }
 
 }

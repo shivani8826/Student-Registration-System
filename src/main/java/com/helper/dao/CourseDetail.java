@@ -2,6 +2,7 @@ package com.helper.dao;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -12,9 +13,28 @@ import javax.persistence.Table;
 public class CourseDetail {
 
     @Id
-    private Integer Course_Id;
-    private String Course_Name;
+    @Column(name = "Course_Id")
+    private Integer courseId;
+
+    @Column(name = "Course_Name")
+    private String courseName;
     private boolean isActive;
+
+    public Integer getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Integer courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 
     public boolean isActive() {
         return isActive;
@@ -24,35 +44,10 @@ public class CourseDetail {
         isActive = active;
     }
 
-    public Integer getCourse_Id() {
-        return Course_Id;
-    }
-
-    public void setCourse_Id(Integer course_Id) {
-        Course_Id = course_Id;
-    }
-
-    public String getCourse_Name() {
-        return Course_Name;
-    }
-
-    public void setCourse_Name(String course_Name) {
-        Course_Name = course_Name;
-    }
-
-    @Override
-    public String toString() {
-        return "CourseDetail{" +
-                "Course_Id=" + Course_Id +
-                ", Course_Name=" + Course_Name +
-                ", isActive=" + isActive+
-                '}';
-    }
-
-    public CourseDetail(Integer course_Id, String course_Name,boolean isActive) {
-        Course_Id = course_Id;
-        Course_Name = course_Name;
-        isActive=isActive;
+    public CourseDetail(Integer courseId, String courseName, boolean isActive) {
+        this.courseId = courseId;
+        this.courseName=courseName;
+        this.isActive=isActive;
     }
 
     public CourseDetail(){

@@ -6,17 +6,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CourseListResponse {
 
-    Integer courseId;
+    List<Integer> courseId;
    // String courseName;
    @JsonFormat(pattern = "mm-dd-yyyy")
     Date dateOfRegistration;
 
 
-    public CourseListResponse(Integer courseId,  Date dateOfRegistration) {
+    public CourseListResponse(List<Integer> courseId,  Date dateOfRegistration) {
         this.courseId = courseId;
       //  this.courseName = courseName;
         this.dateOfRegistration = dateOfRegistration;
@@ -27,22 +28,14 @@ public class CourseListResponse {
 
     }
 
-    public Integer getCourseId() {
+    public List<Integer> getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(Integer courseId) {
+    public void setCourseId(List<Integer> courseId) {
         this.courseId = courseId;
     }
 
-   /* public String getCourseName() {
-        return courseName;
-    }
-
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-*/
     public Date getDateOfRegistration() {
         return dateOfRegistration;
     }

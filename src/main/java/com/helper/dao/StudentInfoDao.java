@@ -23,7 +23,7 @@ public class StudentInfoDao {
         session.close();
     }
 
-    public Integer getID(StudentInfo studentInfo){
+    public Integer getId(StudentInfo studentInfo){
         return studentInfo.getStudentID();
     }
 
