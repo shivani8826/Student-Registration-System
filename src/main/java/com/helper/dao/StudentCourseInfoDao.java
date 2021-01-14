@@ -1,18 +1,14 @@
 package com.helper.dao;
 
-import ResponseEntity.CourseListResponse;
-import net.sf.ehcache.hibernate.HibernateUtil;
+import com.helper.dto.response.CourseList;
+import com.helper.entity.StudentCourseInfo;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.security.auth.login.Configuration;
-import java.time.LocalDate;
 import java.util.List;
 
 @Transactional
@@ -23,8 +19,6 @@ public class StudentCourseInfoDao {
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
 
-   // SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-
     public void save (StudentCourseInfo studentCourseInfo)
     {
         Session session = this.sessionFactory.openSession();
@@ -32,15 +26,28 @@ public class StudentCourseInfoDao {
         session.close();
     }
 
-    public List<CourseListResponse> getStudentIdNameDate(Integer studentId) {
+    public List<CourseList>getStudentIdNameDate (Integer studentId) throws Exception {
 
         Session session = this.sessionFactory.openSession();
 
-        String query = "select Course_Id ,Date_of_Registration from StudentCourseInfo where Student_Id = studentId";
-        NativeQuery nq = session.createSQLQuery(query);
-        List<CourseListResponse> allCourses = nq.list(); //giving error
+        List<CourseList> coursesOfAStudent = session.createNativeQuery(
+                "select student_course_info.course_id ,student_course_info.date_of_registration,course_detail.course_name from student_course_info INNER JOIN course_detail ON course_detail.course_id = student_course_info.course_id where student_course_info.student_id = ?")
+                .setParameter(1, studentId).list();
 
         session.close();
-        return allCourses;
+        return coursesOfAStudent;
     }
+
+    public boolean isIdAlreadyExist(Integer id){
+         Session session = this.sessionFactory.openSession();
+       List<StudentCourseInfo>studentCourseInfos = session.createNativeQuery("select * from student_course_info where student_id=?")
+               .setParameter(1, id).list();
+
+        if (studentCourseInfos.size() != 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

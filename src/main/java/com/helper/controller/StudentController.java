@@ -1,15 +1,15 @@
 package com.helper.controller;
 
-import ResponseEntity.*;
-import com.helper.dao.StudentInfo;
+import com.helper.dto.response.ViewListResponse;
+import com.helper.dto.request.StudentCourseCred;
+import com.helper.dto.request.StudentCred;
+import com.helper.dto.response.*;
+import com.helper.entity.StudentInfo;
 import com.helper.service.ServiceClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @EnableWebMvc
 @Controller
@@ -22,21 +22,21 @@ public class StudentController {
     @RequestMapping(value = "/user/onboard", method = RequestMethod.POST)
     @ResponseBody
     public OnboardResponse OnboardUser(@RequestParam() String email, @RequestParam() String first, @RequestParam() String last,
-                                       @RequestParam() String password) {
+                                       @RequestParam() String password) throws Exception{
         return serviceClass.saveDetails(new StudentInfo(email, first, last, password));
     }
 
 
     @RequestMapping(value = "/user/login", method = RequestMethod.POST) //by default choose get
     @ResponseBody
-    public LoginResponse loginUser(@RequestParam() int id, @RequestParam() String password) {
+    public LoginResponse loginUser(@RequestParam() int id, @RequestParam() String password) throws Exception {
         return serviceClass.isLogin(id, password);
     }
 
 
     @RequestMapping(value = "/courses/view", method = RequestMethod.POST)
     public @ResponseBody
-    CourseViewResponse viewCourses(@RequestBody GetStudentCred getParameter) {
+    CourseViewResponse viewCourses(@RequestBody StudentCred getParameter) throws Exception {
         Integer id = getParameter.getId();
         String password = getParameter.getPassword();
         return serviceClass.coursesViewAfterLogin(id, password);
@@ -45,16 +45,16 @@ public class StudentController {
 
     @RequestMapping(value = "user/course/register",method = RequestMethod.POST)
     public @ResponseBody
-    CourseRegisteredResponse CoursesForRegistration(@RequestBody GetEachStudentCourseCred getEachStudentCourseCred) {
-        return serviceClass.saveCoursesOfEachStudent(getEachStudentCourseCred);
+    CourseRegisteredResponse CoursesForRegistration(@RequestBody StudentCourseCred studentCourseCred) {
+        return serviceClass.saveCoursesOfEachStudent(studentCourseCred);
     }
 
 
     @RequestMapping(value = "user/course/list",method = RequestMethod.POST)
     public @ResponseBody
-    ViewListResponse CoursesListDetails(@RequestBody GetStudentCred getStudentCred)
+    ViewListResponse CoursesListDetails(@RequestBody StudentCred studentCred) throws Exception
     {
-         return serviceClass.CoursesListDetails(getStudentCred);
+         return serviceClass.CoursesListDetails(studentCred);
     }
 
 

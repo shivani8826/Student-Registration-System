@@ -1,20 +1,15 @@
 package com.helper.dao;
 
-import org.hibernate.Criteria;
+import com.helper.entity.CourseDetail;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Native;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 @Repository
 @Transactional
@@ -26,11 +21,12 @@ public class CourseDetailDao {
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
 
+
     public List<CourseDetail> getAllCourses()
     {
         Session session=this.sessionFactory.openSession();
 
-        String query="select Course_Id ,Course_Name from CourseDetails where isActive = 1";
+        String query="select course_id ,course_name from course_detail where is_active = 1";
         NativeQuery nq = session.createSQLQuery(query);
         List<CourseDetail> allCourses = nq.list();
 
