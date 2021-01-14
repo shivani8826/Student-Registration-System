@@ -79,17 +79,28 @@ public class ServiceClass {
 
 
    @Transactional
-    public CourseViewResponse coursesViewAfterLogin(Integer id, String password) throws Exception
+    public CourseViewResponse coursesViewAfterLogin(StudentCred studentCred) throws Exception
    {
        try {
+           Integer id = studentCred.getId();
+           String password = studentCred.getPassword();
            String isCheck = studentInfoDao.getPassword(id);
-           List<CourseDetail> list = new ArrayList<>();
+           List<Object> list = new ArrayList<>();
+           List<CourseNameId>courseDetails = new ArrayList<>();
 
            if (isCheck.equals(password)) {
                list = courseDetailDao.getAllCourses();
-               return new CourseViewResponse(true, "success", list);
+               for(int i=0;i<list.size();i++){
+                   Integer courseId = (Integer) ((Object[])(list.get(i)))[0];
+                   String courseName = (String) ((Object[])(list.get(i)))[1];
+                   CourseNameId courseNameId = new CourseNameId(courseId,courseName);
+
+                   courseDetails.add(courseNameId);
+               }
+
+               return new CourseViewResponse("success", true, courseDetails);
            } else {
-               return new CourseViewResponse(false, "failed", list);
+               return new CourseViewResponse("failed", false, courseDetails);
            }
        }
        catch (Exception e){
@@ -135,21 +146,33 @@ public class ServiceClass {
    }
 
 
-    public ViewListResponse CoursesListDetails(StudentCred studentCred) throws Exception
+    public ViewListResponse CourseListDetails(StudentCred studentCred) throws Exception
     {
         try {
             Integer id = studentCred.getId();
             String password = studentCred.getPassword();
             String passwordCheck = studentInfoDao.getPassword(id);
-            List<CourseList> listOfStudentCourseInfo = new ArrayList<>();
+            List<Object> listOfStudentCourseInfo = new ArrayList<>();
+            List<CourseList>allCourseList = new ArrayList<>();
 
             if (password.equals(passwordCheck)) {
 
                 listOfStudentCourseInfo = studentCourseInfoDao.getStudentIdNameDate(id);
-                return new ViewListResponse("Data Extracted","success", listOfStudentCourseInfo);
+
+                 for(int i=0;i<listOfStudentCourseInfo.size();i++)
+                 {
+                     Integer courseId=(Integer)((Object[]) listOfStudentCourseInfo.get(i))[0];
+                     Date date = (Date) ((Object[]) listOfStudentCourseInfo.get(i))[1];
+                     String courseName = (String)((Object[]) listOfStudentCourseInfo.get(i))[2];
+
+                    CourseList currentCourseList =  new CourseList(courseId,date,courseName);
+                    allCourseList.add(currentCourseList);
+
+                }
+                return new ViewListResponse("Data Extracted","success", allCourseList);
 
             } else {
-                return new ViewListResponse("Not registered any Course","failed", listOfStudentCourseInfo);
+                return new ViewListResponse("Not registered any Course","failed", allCourseList);
             }
         }
         catch (Exception e){

@@ -14,15 +14,17 @@ public class ViewListResponse implements Serializable {
     List<CourseList> courseList;
 
 
-    public ViewListResponse(){
+    public ViewListResponse() {
 
     }
 
-    public ViewListResponse(String message,String success, List<CourseList> courseList) {
+
+    public ViewListResponse(String success, String message, List<CourseList> courseList) {
         this.success = success;
         this.message = message;
         this.courseList = courseList;
     }
+
 
     public String getSuccess() {
         return success;
@@ -48,3 +50,4 @@ public class ViewListResponse implements Serializable {
         this.courseList = courseList;
     }
 }
+

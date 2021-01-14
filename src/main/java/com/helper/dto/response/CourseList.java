@@ -11,16 +11,27 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CourseList {
 
-    List<Integer> courseId;
+    Integer courseId;
     Date dateOfRegistration;
     String courseName;
 
 
-    public List<Integer> getCourseId() {
+    public CourseList(Integer courseId, Date dateOfRegistration, String courseName) {
+        this.courseId = courseId;
+        this.dateOfRegistration = dateOfRegistration;
+        this.courseName = courseName;
+    }
+
+    public CourseList()
+    {
+
+    }
+
+    public Integer getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(List<Integer> courseId) {
+    public void setCourseId(Integer courseId) {
         this.courseId = courseId;
     }
 

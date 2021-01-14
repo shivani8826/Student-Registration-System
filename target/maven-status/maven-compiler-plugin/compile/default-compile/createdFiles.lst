@@ -2,6 +2,7 @@ com/helper/dto/response/LoginResponse.class
 com/helper/dto/response/CourseList.class
 ResponseEntity/AllCourseView.class
 com/helper/dao/StudentCourseInfoDao.class
+com/helper/dto/response/CourseNameId.class
 com/helper/dao/CourseDetailDao.class
 com/helper/entity/StudentCourseInfo.class
 com/helper/dto/response/CourseRegisteredResponse.class

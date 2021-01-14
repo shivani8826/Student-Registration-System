@@ -26,11 +26,11 @@ public class StudentCourseInfoDao {
         session.close();
     }
 
-    public List<CourseList>getStudentIdNameDate (Integer studentId) throws Exception {
+    public List<Object>getStudentIdNameDate (Integer studentId) throws Exception {
 
         Session session = this.sessionFactory.openSession();
 
-        List<CourseList> coursesOfAStudent = session.createNativeQuery(
+        List<Object> coursesOfAStudent = session.createNativeQuery(
                 "select student_course_info.course_id ,student_course_info.date_of_registration,course_detail.course_name from student_course_info INNER JOIN course_detail ON course_detail.course_id = student_course_info.course_id where student_course_info.student_id = ?")
                 .setParameter(1, studentId).list();
 

@@ -4,6 +4,7 @@
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/CourseViewResponse.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dao/StudentInfoDao.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/request/StudentCred.java
+/home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/CourseNameId.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/OnboardResponse.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/CourseList.java
 /home/shivani/Downloads/helper/src/main/java/ResponseEntity/AllCourseView.java

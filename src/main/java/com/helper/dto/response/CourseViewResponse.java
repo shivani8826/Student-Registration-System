@@ -11,14 +11,17 @@ public class CourseViewResponse implements Serializable {
 
     String message;
     boolean success;
-    List<CourseDetail> data;
+    List<CourseNameId> data;
 
-    public boolean isSuccess() {
-        return success;
+
+    public CourseViewResponse(String message, boolean success, List<CourseNameId> data) {
+        this.message = message;
+        this.success = success;
+        this.data = data;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public CourseViewResponse(){
+
     }
 
     public String getMessage() {
@@ -29,17 +32,19 @@ public class CourseViewResponse implements Serializable {
         this.message = message;
     }
 
-    public List<CourseDetail> getData() {
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public List<CourseNameId> getData() {
         return data;
     }
 
-    public void setL(List<CourseDetail> data) {
-        this.data = data;
-    }
-
-    public CourseViewResponse(boolean success,String message, List<CourseDetail> data) {
-        this.message = message;
-        this.success=success;
+    public void setData(List<CourseNameId> data) {
         this.data = data;
     }
 }

@@ -36,10 +36,8 @@ public class StudentController {
 
     @RequestMapping(value = "/courses/view", method = RequestMethod.POST)
     public @ResponseBody
-    CourseViewResponse viewCourses(@RequestBody StudentCred getParameter) throws Exception {
-        Integer id = getParameter.getId();
-        String password = getParameter.getPassword();
-        return serviceClass.coursesViewAfterLogin(id, password);
+    CourseViewResponse viewCourses(@RequestBody StudentCred studentCred) throws Exception {
+        return serviceClass.coursesViewAfterLogin(studentCred);
     }
 
 
@@ -54,7 +52,7 @@ public class StudentController {
     public @ResponseBody
     ViewListResponse CoursesListDetails(@RequestBody StudentCred studentCred) throws Exception
     {
-         return serviceClass.CoursesListDetails(studentCred);
+         return serviceClass.CourseListDetails(studentCred);
     }
 
 

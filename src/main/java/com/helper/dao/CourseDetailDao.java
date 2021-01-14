@@ -22,13 +22,13 @@ public class CourseDetailDao {
     private SessionFactory sessionFactory;
 
 
-    public List<CourseDetail> getAllCourses()
+    public List<Object> getAllCourses()
     {
         Session session=this.sessionFactory.openSession();
 
         String query="select course_id ,course_name from course_detail where is_active = 1";
         NativeQuery nq = session.createSQLQuery(query);
-        List<CourseDetail> allCourses = nq.list();
+        List<Object> allCourses = nq.list();
 
         session.close();
         return allCourses;
