@@ -1,10 +1,11 @@
 package com.helper.controller;
 
+import com.helper.dto.request.AdminCred;
 import com.helper.dto.response.ViewListResponse;
 import com.helper.dto.request.StudentCourseCred;
 import com.helper.dto.request.StudentCred;
 import com.helper.dto.response.*;
-import com.helper.entity.StudentInfo;
+import com.helper.entity.UserInfo;
 import com.helper.service.ServiceClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class StudentController {
     @ResponseBody
     public OnboardResponse OnboardUser(@RequestParam() String email, @RequestParam() String first, @RequestParam() String last,
                                        @RequestParam() String password) throws Exception{
-        return serviceClass.saveDetails(new StudentInfo(email, first, last, password));
+        return serviceClass.saveDetails(new UserInfo(email, first, last, password));
     }
 
 
@@ -54,6 +55,9 @@ public class StudentController {
     {
          return serviceClass.CourseListDetails(studentCred);
     }
+
+
+
 
 
 

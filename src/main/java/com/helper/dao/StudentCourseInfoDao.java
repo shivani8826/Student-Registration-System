@@ -1,6 +1,6 @@
 package com.helper.dao;
 
-import com.helper.dto.response.CourseList;
+import com.helper.dto.response.AdminView;
 import com.helper.entity.StudentCourseInfo;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -48,6 +48,13 @@ public class StudentCourseInfoDao {
         } else {
             return false;
         }
+    }
+
+    public List<Object> adminViewAllStudentInfo ()
+    {
+        Session session = this.sessionFactory.openSession();
+        List<Object> adminViewRespons = session.createNativeQuery("select student_course_info.student_id,student_course_info.course_id,course_detail.course_name from student_course_info INNER JOIN course_detail ON course_detail.course_id = student_course_info.course_id").list();
+        return adminViewRespons;
     }
 
 }

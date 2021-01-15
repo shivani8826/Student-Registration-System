@@ -6,9 +6,8 @@ import com.helper.dao.*;
 import com.helper.dto.request.StudentCourseCred;
 import com.helper.dto.request.StudentCred;
 import com.helper.dto.response.*;
-import com.helper.entity.CourseDetail;
 import com.helper.entity.StudentCourseInfo;
-import com.helper.entity.StudentInfo;
+import com.helper.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ServiceClass {
 
     @Autowired
-    private StudentInfoDao studentInfoDao;
+    private UserInfoDao userInfoDao;
 
     @Autowired
     private CourseDetailDao courseDetailDao;
@@ -30,10 +31,48 @@ public class ServiceClass {
     private StudentCourseInfoDao studentCourseInfoDao;
 
 
+    /*      --------------   Password Validation Check  ------------------------ */
+    public boolean isValidPassword(String password)
+    {
+
+        // Regex to check valid password.
+        String regex = "^(?=.*[0-9])"
+                + "(?=.*[a-z])(?=.*[A-Z])"
+                + "(?=.*[@#$%^&+=])"
+                + "(?=\\S+$).{6,20}$";
+
+        // Compile the ReGex
+        Pattern p = Pattern.compile(regex);
+
+        // If the password is empty return false
+        if (password == null) {
+            return false;
+        }
+
+        Matcher m = p.matcher(password);
+        return m.matches();
+    }
+
+
+    /*      -------------- Email Validation Check  ------------------------ */
+    public boolean isValidEmail(String email)
+    {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                "[a-zA-Z0-9_+&*-]+)*@" +
+                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                "A-Z]{2,7}$";
+
+        Pattern pat = Pattern.compile(emailRegex);
+        if (email == null)
+            return false;
+        return pat.matcher(email).matches();
+    }
+
+
     @Transactional
-    public void save(StudentInfo studentInfo) {
+    public void save(UserInfo userInfo) {
         try {
-            studentInfoDao.save(studentInfo);
+            userInfoDao.save(userInfo);
         }
         catch (Exception e){
             System.out.println(e);
@@ -41,21 +80,29 @@ public class ServiceClass {
     }
 
     @Transactional
-    public OnboardResponse saveDetails(StudentInfo studentInfo) throws Exception{
+    public OnboardResponse saveDetails(UserInfo userInfo) throws Exception{
 
-        try {
 
-            boolean idExist = studentInfoDao.emailExistOrNot(studentInfo.getEmail());
+        boolean isValidPassword = isValidPassword(userInfo.getPassword());
+        boolean isValidEmail = isValidEmail(userInfo.getEmail());
 
-            if (idExist) {
-                save(studentInfo);
-                return OnboardResponse.buildResp(studentInfo.getStudentID(), "Successfully Registered", "SUCCESS");
-            } else {
-                return OnboardResponse.buildResp(-1, "Email already exist", "FAILED");
+        if(isValidEmail && isValidPassword) {
+            try {
+                boolean idExist = userInfoDao.emailExistOrNot(userInfo.getEmail());
+
+                if (idExist) {
+                    save(userInfo);
+                    return OnboardResponse.buildResp(userInfo.getUserId(), "Successfully Registered", "SUCCESS");
+                } else {
+                    return OnboardResponse.buildResp(-1, "Email already exist", "FAILED");
+                }
+            } catch (Exception e) {
+                throw e;
             }
         }
-        catch (Exception e){
-            throw e;
+
+        else{
+            return OnboardResponse.buildResp(-1,"Email / Password is Invalid","FAILED");
         }
     }
 
@@ -64,8 +111,13 @@ public class ServiceClass {
    @Transactional
     public LoginResponse isLogin(Integer id, String password ) throws Exception
    {
+       if(id==0){
+           return LoginResponse.buildRes("Invalid Student Id","Login Failed");
+       }
+
+
        try {
-           String isCheck = studentInfoDao.getPassword(id);
+           String isCheck = userInfoDao.getPassword(id);
            if (isCheck.equals(password)) {
                return LoginResponse.buildRes("Login Successful", "Success");
            } else {
@@ -84,7 +136,7 @@ public class ServiceClass {
        try {
            Integer id = studentCred.getId();
            String password = studentCred.getPassword();
-           String isCheck = studentInfoDao.getPassword(id);
+           String isCheck = userInfoDao.getPassword(id);
            List<Object> list = new ArrayList<>();
            List<CourseNameId>courseDetails = new ArrayList<>();
 
@@ -151,7 +203,7 @@ public class ServiceClass {
         try {
             Integer id = studentCred.getId();
             String password = studentCred.getPassword();
-            String passwordCheck = studentInfoDao.getPassword(id);
+            String passwordCheck = userInfoDao.getPassword(id);
             List<Object> listOfStudentCourseInfo = new ArrayList<>();
             List<CourseList>allCourseList = new ArrayList<>();
 
@@ -180,5 +232,60 @@ public class ServiceClass {
         }
 
     }
+
+
+    public LoginResponse AdminLogin(Integer id,String password, boolean userType) throws Exception{
+
+        try {
+        /*    Integer adminId = adminCred.getAdminId();
+            String password = adminCred.getPassword();
+            boolean userType = adminCred.isUserType();
+*/
+            String isCheckPassword = userInfoDao.getPassword(id);//exception may occur
+
+            if(isCheckPassword.equals(password) && userType){
+                return new LoginResponse("Admin Login Successful","success");
+            }
+            else{
+                return new LoginResponse("Invalid Id / Password / User Type","failed");
+            }
+        }
+        catch (Exception e){
+            throw e;
+        }
+    }
+
+
+    public AdminViewResponse AdminViewAllCourses(Integer id,String password, boolean userType) throws Exception
+    {
+
+        String isCheckPassword = userInfoDao.getPassword(id);
+        List<AdminView> allStudentDetails = new ArrayList<>();
+
+        if(isCheckPassword.equals(password) && userType) {
+            List<Object> adminView = studentCourseInfoDao.adminViewAllStudentInfo();
+
+            try {
+
+                for (int i = 0; i < adminView.size(); i++) {
+                    Integer studentId = (Integer) ((Object[]) adminView.get(i))[0];
+                    Integer courseId = (Integer) ((Object[]) adminView.get(i))[1];
+                    String courseName = (String) ((Object[]) adminView.get(i))[2];
+
+                    AdminView currentAdminView = new AdminView(studentId, courseId, courseName);
+                    allStudentDetails.add(currentAdminView);
+                }
+
+                return new AdminViewResponse("Student Details Extracted", allStudentDetails);
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+
+        else{
+            return new AdminViewResponse("Invalid Input Credentials",allStudentDetails);
+        }
+    }
+
 
 }

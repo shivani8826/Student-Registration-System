@@ -1,7 +1,6 @@
 package com.helper.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.helper.entity.StudentInfo;
 
 import java.io.Serializable;
 
@@ -22,8 +21,8 @@ public class   OnboardResponse implements Serializable {
 
     }
 
-    public static OnboardResponse buildResp(int studentId, String message, String success) {
-        return new OnboardResponse(studentId,message,success);
+    public static OnboardResponse buildResp(int userId, String message, String success) {
+        return new OnboardResponse(userId,message,success);
     }
 
     public Integer getId() {
