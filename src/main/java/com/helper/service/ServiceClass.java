@@ -8,10 +8,12 @@ import com.helper.dto.request.StudentCred;
 import com.helper.dto.response.*;
 import com.helper.entity.StudentCourseInfo;
 import com.helper.entity.UserInfo;
+import com.helper.entity.UserTokenDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +32,8 @@ public class ServiceClass {
     @Autowired
     private StudentCourseInfoDao studentCourseInfoDao;
 
+    @Autowired
+    private UserTokenDetailsDao userTokenDetailsDao;
 
     /*      --------------   Password Validation Check  ------------------------ */
     public boolean isValidPassword(String password)
@@ -69,7 +73,7 @@ public class ServiceClass {
     }
 
 
-    @Transactional
+
     public void save(UserInfo userInfo) {
         try {
             userInfoDao.save(userInfo);
@@ -79,7 +83,7 @@ public class ServiceClass {
         }
     }
 
-    @Transactional
+
     public OnboardResponse saveDetails(UserInfo userInfo) throws Exception{
 
 
@@ -107,21 +111,25 @@ public class ServiceClass {
     }
 
 
-
-   @Transactional
     public LoginResponse isLogin(Integer id, String password ) throws Exception
    {
-       if(id==0){
-           return LoginResponse.buildRes("Invalid Student Id","Login Failed");
-       }
+        try {
 
-
-       try {
            String isCheck = userInfoDao.getPassword(id);
-           if (isCheck.equals(password)) {
-               return LoginResponse.buildRes("Login Successful", "Success");
+           int userType = userInfoDao.getUserType(id);
+
+           if (isCheck.equals(password) && userType==0) {
+
+               LocalDateTime createdAt = LocalDateTime.now();
+               LocalDateTime validUpto = createdAt.plusMinutes(10);
+               String userToken = createdAt + String.valueOf(id);
+
+               userTokenDetailsDao.save(new UserTokenDetails(userToken,id,createdAt,validUpto));
+
+
+               return LoginResponse.buildRes("Login Successful",userToken ,"Success");
            } else {
-               return LoginResponse.buildRes("Invalid Student Id / Password", "Login Failed");
+               return LoginResponse.buildRes("Invalid Student Id / Password",null, "Login Failed");
            }
        }
        catch (Exception e){
@@ -130,7 +138,6 @@ public class ServiceClass {
    }
 
 
-   @Transactional
     public CourseViewResponse coursesViewAfterLogin(StudentCred studentCred) throws Exception
    {
        try {
@@ -234,20 +241,18 @@ public class ServiceClass {
     }
 
 
-    public LoginResponse AdminLogin(Integer id,String password, boolean userType) throws Exception{
+    public AdminLoginResponse AdminLogin(Integer id,String password) throws Exception{
 
         try {
-        /*    Integer adminId = adminCred.getAdminId();
-            String password = adminCred.getPassword();
-            boolean userType = adminCred.isUserType();
-*/
-            String isCheckPassword = userInfoDao.getPassword(id);//exception may occur
+           String isCheckPassword = userInfoDao.getPassword(id);//exception may occur
 
-            if(isCheckPassword.equals(password) && userType){
-                return new LoginResponse("Admin Login Successful","success");
+            Integer userType = userInfoDao.getUserType(id);
+
+            if(isCheckPassword.equals(password) && userType==1){
+                return new AdminLoginResponse("Admin Login Successful","success");
             }
             else{
-                return new LoginResponse("Invalid Id / Password / User Type","failed");
+                return new AdminLoginResponse("Invalid credentials","failed");
             }
         }
         catch (Exception e){
@@ -276,14 +281,14 @@ public class ServiceClass {
                     allStudentDetails.add(currentAdminView);
                 }
 
-                return new AdminViewResponse("Student Details Extracted", allStudentDetails);
+                return new AdminViewResponse("Student Details Extracted","true", allStudentDetails);
             } catch (Exception e) {
                 throw e;
             }
         }
 
         else{
-            return new AdminViewResponse("Invalid Input Credentials",allStudentDetails);
+            return new AdminViewResponse("Invalid Input Credentials","false",allStudentDetails);
         }
     }
 

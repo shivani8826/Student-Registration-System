@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class CourseList {
 
     Integer courseId;

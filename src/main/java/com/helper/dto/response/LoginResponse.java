@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class LoginResponse implements Serializable {
 
-    String success;
+
     String message;
+    String success;
+    String userToken;
 
     public String getSuccess() {
         return success;
@@ -26,13 +28,22 @@ public class LoginResponse implements Serializable {
         this.message = message;
     }
 
-    public LoginResponse(String success, String message) {
-        this.success = success;
+    public LoginResponse(String message, String success, String userToken) {
         this.message = message;
+        this.success = success;
+        this.userToken = userToken;
     }
 
-    public static LoginResponse buildRes(String success, String message)
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
+    }
+
+    public static LoginResponse buildRes(String message, String userToken, String success)
     {
-        return new LoginResponse(success,message);
+        return new LoginResponse(message,userToken,success);
     }
 }

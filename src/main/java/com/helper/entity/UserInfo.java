@@ -27,7 +27,7 @@ public class UserInfo {
     private String password;
 
     @Column(name = "user_type")
-    private boolean userType;
+    private Integer userType;
 
     public UserInfo(){
     }
@@ -79,11 +79,11 @@ public class UserInfo {
         this.password = password;
     }
 
-    public boolean isUserType() {
+    public Integer isUserType() {
         return userType;
     }
 
-    public void setUserType(boolean userType) {
+    public void setUserType(Integer userType) {
         this.userType = userType;
     }
 }

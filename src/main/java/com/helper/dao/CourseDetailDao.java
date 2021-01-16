@@ -12,10 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional
 public class CourseDetailDao {
-
-    private static final long serialVersionUID = 1L;
 
     @Autowired
     @Qualifier("hibernate4AnnotatedSessionFactory")

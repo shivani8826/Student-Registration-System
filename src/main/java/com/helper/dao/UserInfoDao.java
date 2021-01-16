@@ -11,17 +11,19 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
 public class UserInfoDao {
 
     @Autowired
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
 
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
-    public void save(UserInfo p) throws Exception {
+    public void save(UserInfo userInfo) throws Exception {
         Session session = this.sessionFactory.openSession();
-        session.save(p);
+        session.save(userInfo);
         session.close();
     }
 
@@ -60,15 +62,17 @@ public class UserInfoDao {
 
 
 
-    public boolean getUserType(Integer id) throws Exception{
+    public Integer getUserType(Integer id) throws Exception{
         Session session = this.sessionFactory.openSession();
         UserInfo userInfo = session.get(UserInfo.class,id);
         if(userInfo==null)
-            return false;
+            return -1;
 
-        boolean userType = userInfo.isUserType();
+        Integer userType = userInfo.isUserType();
         session.close();
-        return true;
+        return userType;
     }
+
+
 
 }

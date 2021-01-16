@@ -1,6 +1,7 @@
 package com.helper.controller;
 
 import com.helper.dto.request.AdminCred;
+import com.helper.dto.response.AdminLoginResponse;
 import com.helper.dto.response.AdminViewResponse;
 import com.helper.dto.response.LoginResponse;
 import com.helper.service.ServiceClass;
@@ -23,9 +24,9 @@ public class AdminController {
         return serviceClass.AdminLogin(adminCred);
     }*/
 
-    LoginResponse LoginAdmin(@RequestParam Integer id , @RequestParam String password , @RequestParam boolean userType) throws Exception
+    AdminLoginResponse LoginAdmin(@RequestParam Integer id , @RequestParam String password) throws Exception
     {
-        return serviceClass.AdminLogin(id,password,userType);
+        return serviceClass.AdminLogin(id,password);
     }
 
 

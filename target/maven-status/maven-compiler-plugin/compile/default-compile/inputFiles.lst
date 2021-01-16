@@ -8,7 +8,6 @@
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/OnboardResponse.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/AdminView.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/CourseList.java
-/home/shivani/Downloads/helper/src/main/java/ResponseEntity/AllCourseView.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/entity/UserInfo.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/LoginResponse.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/service/ServiceClass.java
@@ -16,8 +15,9 @@
 /home/shivani/Downloads/helper/src/main/java/com/helper/dao/CourseDetailDao.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/entity/CourseDetail.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/ViewListResponse.java
+/home/shivani/Downloads/helper/src/main/java/com/helper/entity/UserTokenDetails.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/controller/StudentController.java
-/home/shivani/Downloads/helper/src/main/java/ResponseEntity/EachStudentCourseCred.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/response/CourseRegisteredResponse.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/controller/AdminController.java
+/home/shivani/Downloads/helper/src/main/java/com/helper/dao/UserTokenDetailsDao.java
 /home/shivani/Downloads/helper/src/main/java/com/helper/dto/request/StudentCourseCred.java

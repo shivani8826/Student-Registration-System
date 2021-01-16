@@ -7,17 +7,19 @@ import java.util.List;
 public class AdminViewResponse {
 
     String message;
+    String success;
     List<AdminView> allStudentDetails;
 
 
 
-    public AdminViewResponse()
-    {
+    public AdminViewResponse() {
 
     }
 
-    public AdminViewResponse(String message, List<AdminView> allStudentDetails) {
+
+    public AdminViewResponse(String message, String success, List<AdminView> allStudentDetails) {
         this.message = message;
+        this.success = success;
         this.allStudentDetails = allStudentDetails;
     }
 
@@ -36,4 +38,13 @@ public class AdminViewResponse {
     public void setAllStudentDetails(List<AdminView> allStudentDetails) {
         this.allStudentDetails = allStudentDetails;
     }
+
+    public String getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(String success) {
+        this.success = success;
+    }
 }
+
