@@ -1,11 +1,10 @@
 package com.helper.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -14,27 +13,34 @@ import java.util.Date;
 public class UserTokenDetails {
 
     @javax.persistence.Id
-    @Column(name="user_token")
+    @Column(name = "user_token")
     String userToken;
 
     @Column(name = "user_id")
     Integer userId;
 
     @Column(name = "created_at")
+    //@Temporal(TemporalType.TIMESTAMP)
+    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime  createdAt;
+ //   Date createdAt;
 
-   @Column(name = "valid_upto")
-   LocalDateTime validUpto;
+    @Column(name = "valid_upto")
+   // @Temporal(TemporalType.TIMESTAMP)
+    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime validUpto;
+  //  Date validUpto;
+
+
+    public UserTokenDetails(){
+
+    }
 
     public UserTokenDetails(String userToken, Integer userId, LocalDateTime createdAt, LocalDateTime validUpto) {
         this.userToken = userToken;
         this.userId = userId;
         this.createdAt = createdAt;
         this.validUpto = validUpto;
-    }
-
-    public UserTokenDetails(){
-
     }
 
     public String getUserToken() {
@@ -52,7 +58,6 @@ public class UserTokenDetails {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
-
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

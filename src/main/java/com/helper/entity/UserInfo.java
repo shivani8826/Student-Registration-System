@@ -1,6 +1,7 @@
 package com.helper.entity;
 
 import lombok.NonNull;
+import org.hibernate.validator.constraints.Email;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import java.util.*;
 @Table(name="user_info")
 public class UserInfo {
 
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private int userId;
@@ -32,11 +33,12 @@ public class UserInfo {
     public UserInfo(){
     }
 
-    public UserInfo(String email, String firstName, String lastName, String password) {
+    public UserInfo(String email, String firstName, String lastName, String password,Integer userType) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.userType=userType;
     }
 
     public int getUserId() {

@@ -18,9 +18,8 @@ public class CourseDetailDao {
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
 
-
-    public List<Object> getAllCourses()
-    {
+     public List<Object> getAllCourses()
+     {
         Session session=this.sessionFactory.openSession();
 
         String query="select course_id ,course_name from course_detail where is_active = 1";

@@ -5,18 +5,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.util.List;
 
-public class CourseRegisteredResponse implements Serializable {
+public class CourseRegisterResponse implements Serializable {
 
     String message;
     String success;
     List<String> courses;
 
-    public CourseRegisteredResponse(String message, String success,List<String>courses) {
+    public CourseRegisterResponse(String message, String success, List<String>courses) {
         this.message = message;
         this.success = success;
         this.courses = courses;
     }
-    public CourseRegisteredResponse()
+    public CourseRegisterResponse()
     {
 
     }

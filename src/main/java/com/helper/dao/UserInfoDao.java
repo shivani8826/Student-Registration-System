@@ -1,14 +1,19 @@
 package com.helper.dao;
 
+import com.helper.entity.StudentCourseInfo;
 import com.helper.entity.UserInfo;
+import com.helper.entity.UserTokenDetails;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public class UserInfoDao {
@@ -17,29 +22,26 @@ public class UserInfoDao {
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
     public void save(UserInfo userInfo) throws Exception {
         Session session = this.sessionFactory.openSession();
         session.save(userInfo);
         session.close();
     }
 
-
     public boolean emailExistOrNot(String email) throws Exception{
 
         try {
-            Criteria criteria = sessionFactory.getCurrentSession().createCriteria(UserInfo.class);
+            Session session = this.sessionFactory.openSession();
+            Criteria criteria = session.createCriteria(UserInfo.class);
             criteria.add(Restrictions.like("email", email));
             UserInfo userInfo = (UserInfo) criteria.uniqueResult();
+
             if (userInfo == null)
                 return true;
             else return false;
         }
         catch (Exception e){
-            System.out.println(e);
+            System.out.println("Something went wrong");
             return false;
         }
     }
@@ -74,5 +76,29 @@ public class UserInfoDao {
     }
 
 
+    public String getUserEmail(Integer id)
+    {
+        Session session = this.sessionFactory.openSession();
+        UserInfo userInfo = session.get(UserInfo.class,id);
+        if(userInfo==null)
+            return null;
+
+        String email = userInfo.getEmail();
+        session.close();
+        return email;
+    }
+
+    public String name(Integer id)
+    {
+        Session session = this.sessionFactory.openSession();
+        UserInfo userInfo = session.get(UserInfo.class,id);
+        if(userInfo==null)
+            return null;
+
+        String firstName = userInfo.getFirstName();
+        String lastName = userInfo.getLastName();
+        session.close();
+        return firstName+lastName;
+    }
 
 }

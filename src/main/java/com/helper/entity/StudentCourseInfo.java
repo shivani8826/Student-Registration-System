@@ -19,7 +19,6 @@ public class StudentCourseInfo {
     @Column(name = "course_id")
     Integer courseId;
 
-    @JsonFormat(pattern = "mm-dd-yyyy")
     @Column(name = "date_of_registration")
     private Date dateOfRegistration;
 

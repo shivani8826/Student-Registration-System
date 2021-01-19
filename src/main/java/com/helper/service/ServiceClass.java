@@ -1,5 +1,6 @@
 package com.helper.service;
 
+import com.helper.MailSender.EmailConfigure;
 import com.helper.dto.response.ViewListResponse;
 import com.helper.dao.*;
 
@@ -10,9 +11,10 @@ import com.helper.entity.StudentCourseInfo;
 import com.helper.entity.UserInfo;
 import com.helper.entity.UserTokenDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,6 +37,13 @@ public class ServiceClass {
     @Autowired
     private UserTokenDetailsDao userTokenDetailsDao;
 
+
+    @Autowired
+    private EmailConfigure emailConfigure;
+
+
+
+
     /*      --------------   Password Validation Check  ------------------------ */
     public boolean isValidPassword(String password)
     {
@@ -42,8 +51,7 @@ public class ServiceClass {
         // Regex to check valid password.
         String regex = "^(?=.*[0-9])"
                 + "(?=.*[a-z])(?=.*[A-Z])"
-                + "(?=.*[@#$%^&+=])"
-                + "(?=\\S+$).{6,20}$";
+                + "(?=.*[@#$%^&+=]).{6,20}$";
 
         // Compile the ReGex
         Pattern p = Pattern.compile(regex);
@@ -76,7 +84,19 @@ public class ServiceClass {
 
     public void save(UserInfo userInfo) {
         try {
+
             userInfoDao.save(userInfo);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+
+    public void saveTokenDetails(UserTokenDetails userTokenDetails) {
+        try {
+
+            userTokenDetailsDao.save(userTokenDetails);
         }
         catch (Exception e){
             System.out.println(e);
@@ -90,14 +110,38 @@ public class ServiceClass {
         boolean isValidPassword = isValidPassword(userInfo.getPassword());
         boolean isValidEmail = isValidEmail(userInfo.getEmail());
 
+
         if(isValidEmail && isValidPassword) {
             try {
                 boolean idExist = userInfoDao.emailExistOrNot(userInfo.getEmail());
 
                 if (idExist) {
                     save(userInfo);
-                    return OnboardResponse.buildResp(userInfo.getUserId(), "Successfully Registered", "SUCCESS");
-                } else {
+
+                //create a mail sender
+                JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+                javaMailSender.setHost("smtp.mailtrap.io");
+                javaMailSender.setPort(2525);
+                javaMailSender.setUsername("9d82e83c1d2745");
+                javaMailSender.setPassword("9b0625cba34c51");
+
+
+                //create a email instance
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setFrom("university.portal@gmail.com");
+                mailMessage.setTo(userInfo.getEmail());
+                mailMessage.setSubject("Registration Successful "+ userInfo.getFirstName());
+                mailMessage.setText("Dear "+userInfo.getFirstName()+",\nWelcome in our University. You have successfully registered on our portal !!");
+
+                //send mail
+                javaMailSender.send(mailMessage);
+
+
+                return OnboardResponse.buildResp(userInfo.getUserId(), "Successfully Registered", "SUCCESS");
+
+                }
+
+                else {
                     return OnboardResponse.buildResp(-1, "Email already exist", "FAILED");
                 }
             } catch (Exception e) {
@@ -124,10 +168,10 @@ public class ServiceClass {
                LocalDateTime validUpto = createdAt.plusMinutes(10);
                String userToken = createdAt + String.valueOf(id);
 
-               userTokenDetailsDao.save(new UserTokenDetails(userToken,id,createdAt,validUpto));
+               UserTokenDetails userTokenDetails = new UserTokenDetails(userToken,id,createdAt,validUpto);
+               saveTokenDetails(userTokenDetails);
 
-
-               return LoginResponse.buildRes("Login Successful",userToken ,"Success");
+               return LoginResponse.buildRes("Login Successful",userTokenDetails.getUserToken() ,"Success");
            } else {
                return LoginResponse.buildRes("Invalid Student Id / Password",null, "Login Failed");
            }
@@ -144,10 +188,12 @@ public class ServiceClass {
            Integer id = studentCred.getId();
            String password = studentCred.getPassword();
            String isCheck = userInfoDao.getPassword(id);
+           Integer userType = userInfoDao.getUserType(id);
+
            List<Object> list = new ArrayList<>();
            List<CourseNameId>courseDetails = new ArrayList<>();
 
-           if (isCheck.equals(password)) {
+           if (isCheck.equals(password) && userType==0) {
                list = courseDetailDao.getAllCourses();
                for(int i=0;i<list.size();i++){
                    Integer courseId = (Integer) ((Object[])(list.get(i)))[0];
@@ -168,23 +214,29 @@ public class ServiceClass {
    }
 
 
-   public CourseRegisteredResponse saveCoursesOfEachStudent(StudentCourseCred getStudentCourseCred) {
+   public CourseRegisterResponse saveCoursesOfEachStudent(StudentCourseCred getStudentCourseCred) {
 
         try {
 
             Integer studentId = getStudentCourseCred.getStudentId();
 
+            // Is courses are already registered with given studentId
             boolean isIdExist = studentCourseInfoDao.isIdAlreadyExist(studentId);
+            String email = userInfoDao.getUserEmail(getStudentCourseCred.getStudentId());
+            String fullName = userInfoDao.name(getStudentCourseCred.getStudentId());
+
+
             List<String> courses = new ArrayList<>();
 
             if(isIdExist) {
-                return new CourseRegisteredResponse("Courses already registered", "Failed", courses);
+                return new CourseRegisterResponse("Courses already registered", "Failed", courses);
             }
 
             else {
                 Integer[] courseId = getStudentCourseCred.getCourseId();
                 Date date = getStudentCourseCred.getDateOfRegistration();
                 Integer validityInDays = getStudentCourseCred.getValidityInDays();
+                String courseString="";
 
 
                 for (int i = 0; i < courseId.length; i++) {
@@ -193,9 +245,31 @@ public class ServiceClass {
 
                     studentCourseInfoDao.save(new StudentCourseInfo(studentId, currentCourseId, date, validityInDays));
 
+                    courseString=courseString+" \n"+course;
                     courses.add(course);
                 }
-                return new CourseRegisteredResponse("Courses Saved", "success", courses);
+
+                //create a mail sender
+                JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+                javaMailSender.setHost("smtp.mailtrap.io");
+                javaMailSender.setPort(2525);
+                javaMailSender.setUsername("9d82e83c1d2745");
+                javaMailSender.setPassword("9b0625cba34c51");
+
+
+                //create a email instance
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setFrom("university.portal@gmail.com");
+                mailMessage.setTo(email);
+                mailMessage.setSubject("Courses Registered Successfully");
+                mailMessage.setText("Hi "+fullName+" ,\nYou have successfully registered the following courses.\n"+courseString+"" +
+                        "\n\n\n\nThanks and Regards");
+
+                //send mail
+                javaMailSender.send(mailMessage);
+
+
+                return new CourseRegisterResponse("Courses Saved", "success", courses);
             }
 
         }
@@ -210,7 +284,9 @@ public class ServiceClass {
         try {
             Integer id = studentCred.getId();
             String password = studentCred.getPassword();
+
             String passwordCheck = userInfoDao.getPassword(id);
+
             List<Object> listOfStudentCourseInfo = new ArrayList<>();
             List<CourseList>allCourseList = new ArrayList<>();
 
@@ -218,8 +294,12 @@ public class ServiceClass {
 
                 listOfStudentCourseInfo = studentCourseInfoDao.getStudentIdNameDate(id);
 
+                if(listOfStudentCourseInfo.size()==0)
+                    return new ViewListResponse("Not registered any Course","failed", allCourseList);
+
                  for(int i=0;i<listOfStudentCourseInfo.size();i++)
                  {
+                     //order will be same as mentioned in query.
                      Integer courseId=(Integer)((Object[]) listOfStudentCourseInfo.get(i))[0];
                      Date date = (Date) ((Object[]) listOfStudentCourseInfo.get(i))[1];
                      String courseName = (String)((Object[]) listOfStudentCourseInfo.get(i))[2];
@@ -228,10 +308,11 @@ public class ServiceClass {
                     allCourseList.add(currentCourseList);
 
                 }
+
                 return new ViewListResponse("Data Extracted","success", allCourseList);
 
             } else {
-                return new ViewListResponse("Not registered any Course","failed", allCourseList);
+                return new ViewListResponse("Invalid Id / Password","failed", allCourseList);
             }
         }
         catch (Exception e){
@@ -261,13 +342,15 @@ public class ServiceClass {
     }
 
 
-    public AdminViewResponse AdminViewAllCourses(Integer id,String password, boolean userType) throws Exception
+    public AdminViewResponse AdminViewAllCourses(Integer id,String password) throws Exception
     {
 
         String isCheckPassword = userInfoDao.getPassword(id);
         List<AdminView> allStudentDetails = new ArrayList<>();
+        Integer userType = userInfoDao.getUserType(id);
 
-        if(isCheckPassword.equals(password) && userType) {
+
+        if(isCheckPassword.equals(password) && userType==1) {
             List<Object> adminView = studentCourseInfoDao.adminViewAllStudentInfo();
 
             try {

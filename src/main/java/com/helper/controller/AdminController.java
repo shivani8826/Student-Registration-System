@@ -20,10 +20,6 @@ public class AdminController {
 
     @RequestMapping(value = "admin/login",method = RequestMethod.POST)
     public @ResponseBody
-    /*LoginResponse LoginAdmin(@RequestBody AdminCred adminCred) throws Exception{
-        return serviceClass.AdminLogin(adminCred);
-    }*/
-
     AdminLoginResponse LoginAdmin(@RequestParam Integer id , @RequestParam String password) throws Exception
     {
         return serviceClass.AdminLogin(id,password);
@@ -33,9 +29,9 @@ public class AdminController {
 
     @RequestMapping(value = "admin/viewAll",method = RequestMethod.POST)
     public @ResponseBody
-    AdminViewResponse ViewAllStudentsInfo(@RequestParam Integer id , @RequestParam String password , @RequestParam boolean userType) throws Exception
+    AdminViewResponse ViewAllStudentsInfo(@RequestParam Integer id , @RequestParam String password ) throws Exception
     {
-        return serviceClass.AdminViewAllCourses(id,password,userType);
+        return serviceClass.AdminViewAllCourses(id,password);
     }
 
 

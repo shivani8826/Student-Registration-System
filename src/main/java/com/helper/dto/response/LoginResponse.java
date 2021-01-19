@@ -28,7 +28,7 @@ public class LoginResponse implements Serializable {
         this.message = message;
     }
 
-    public LoginResponse(String message, String success, String userToken) {
+    public LoginResponse(String message, String userToken , String success) {
         this.message = message;
         this.success = success;
         this.userToken = userToken;
