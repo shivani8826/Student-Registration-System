@@ -25,6 +25,7 @@ public class StudentCourseInfoDao {
         session.close();
     }
 
+
     public List<Object>getStudentIdNameDate (Integer studentId) throws Exception {
 
         Session session = this.sessionFactory.openSession();

@@ -17,7 +17,6 @@ com/helper/dto/response/CourseNameId.class
 com/helper/dao/CourseDetailDao.class
 com/helper/entity/StudentCourseInfo.class
 com/helper/dto/request/AdminCred.class
-com/helper/MailSender/EmailConfigure.class
 com/helper/service/ServiceClass.class
 com/helper/dto/response/CourseRegisterResponse.class
 com/helper/dto/response/CourseViewResponse.class

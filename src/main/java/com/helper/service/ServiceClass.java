@@ -1,9 +1,7 @@
 package com.helper.service;
 
-import com.helper.MailSender.EmailConfigure;
 import com.helper.dto.response.ViewListResponse;
 import com.helper.dao.*;
-
 import com.helper.dto.request.StudentCourseCred;
 import com.helper.dto.request.StudentCred;
 import com.helper.dto.response.*;
@@ -11,14 +9,20 @@ import com.helper.entity.StudentCourseInfo;
 import com.helper.entity.UserInfo;
 import com.helper.entity.UserTokenDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,12 +40,6 @@ public class ServiceClass {
 
     @Autowired
     private UserTokenDetailsDao userTokenDetailsDao;
-
-
-    @Autowired
-    private EmailConfigure emailConfigure;
-
-
 
 
     /*      --------------   Password Validation Check  ------------------------ */
@@ -81,6 +79,99 @@ public class ServiceClass {
     }
 
 
+    /* ------------------------ Md5 Encryption ----------------------------- */
+    private String getMd5 (String input)
+    {
+        try {
+
+            // Static getInstance method is called with hashing MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+
+            // digest() method is called to calculate message digest
+            //  of an input digest() return array of byte
+            byte[] messageDigest = md.digest(input.getBytes());
+
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, messageDigest);
+
+            // Convert message digest into hex value
+            String hashtext = no.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        }
+
+        // For specifying wrong message digest algorithms
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    /************************ Send Mail After student Registration **********************/
+
+    void sendOnboardMailMessage(String email , String userName , Integer userId)
+    {
+        //create a mail sender
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setHost("smtp.gmail.com");
+        javaMailSender.setPort(587);
+        javaMailSender.setUsername("demo49202@gmail.com");
+        javaMailSender.setPassword("Shivani@123");
+
+        Properties properties = new Properties();
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+
+        javaMailSender.setJavaMailProperties(properties);
+
+        //create a email instance
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("university.portal@gmail.com");
+        mailMessage.setTo(email);
+        mailMessage.setSubject("IGDTUW: Account Successfully Created ");
+        mailMessage.setText("Dear "+userName+",\n\nWelcome in our University.\nYou have successfully registered on our portal !!\n\nYour Student Id is: "+userId+"\nYou can now login with this Student Id.\n\n\n\n Thanks and Regards");
+
+        //send mail
+        javaMailSender.send(mailMessage);
+
+
+    }
+
+
+
+    /***************************** Send Mail After Courses being registered ******************************/
+
+    public void sendMailAfterCourseRegister(String email,String fullName,String courseString)
+    {
+        //create a mail sender
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setHost("smtp.gmail.com");
+        javaMailSender.setPort(587);
+        javaMailSender.setUsername("demo49202@gmail.com");
+        javaMailSender.setPassword("Shivani@123");
+
+        Properties properties = new Properties();
+        properties.setProperty("mail.smtp.auth", "true");
+        properties.setProperty("mail.smtp.starttls.enable", "true");
+
+        javaMailSender.setJavaMailProperties(properties);
+
+        //create a email instance
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("university.portal@gmail.com");
+        mailMessage.setTo(email);
+        mailMessage.setSubject("IGDTUW: Course Registered Successfully");
+        mailMessage.setText("Dear "+fullName+" ,\nYou have successfully registered the following courses.\n\n"+courseString+"" +
+                "\n\n\n\nThanks and Regards");
+
+        //send mail
+        javaMailSender.send(mailMessage);
+
+    }
+
 
     public void save(UserInfo userInfo) {
         try {
@@ -106,35 +197,27 @@ public class ServiceClass {
 
     public OnboardResponse saveDetails(UserInfo userInfo) throws Exception{
 
-
         boolean isValidPassword = isValidPassword(userInfo.getPassword());
         boolean isValidEmail = isValidEmail(userInfo.getEmail());
 
 
         if(isValidEmail && isValidPassword) {
             try {
-                boolean idExist = userInfoDao.emailExistOrNot(userInfo.getEmail());
 
-                if (idExist) {
+                boolean emailExist = userInfoDao.emailExistOrNot(userInfo.getEmail());
+
+                // if any student is already registered with that email
+                if (emailExist) {
+
+                    String encryptedPassword = getMd5(userInfo.getPassword());
+                    //saving encrypted password
+                    userInfo.setPassword(encryptedPassword);
+
+                    //saving that student info
                     save(userInfo);
 
-                //create a mail sender
-                JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-                javaMailSender.setHost("smtp.mailtrap.io");
-                javaMailSender.setPort(2525);
-                javaMailSender.setUsername("9d82e83c1d2745");
-                javaMailSender.setPassword("9b0625cba34c51");
-
-
-                //create a email instance
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setFrom("university.portal@gmail.com");
-                mailMessage.setTo(userInfo.getEmail());
-                mailMessage.setSubject("Registration Successful "+ userInfo.getFirstName());
-                mailMessage.setText("Dear "+userInfo.getFirstName()+",\nWelcome in our University. You have successfully registered on our portal !!");
-
-                //send mail
-                javaMailSender.send(mailMessage);
+                    //mail sender
+                    sendOnboardMailMessage(userInfo.getEmail(),userInfo.getFirstName(),userInfo.getUserId());
 
 
                 return OnboardResponse.buildResp(userInfo.getUserId(), "Successfully Registered", "SUCCESS");
@@ -149,6 +232,7 @@ public class ServiceClass {
             }
         }
 
+        // if email or password is invalid
         else{
             return OnboardResponse.buildResp(-1,"Email / Password is Invalid","FAILED");
         }
@@ -161,18 +245,29 @@ public class ServiceClass {
 
            String isCheck = userInfoDao.getPassword(id);
            int userType = userInfoDao.getUserType(id);
+           String encryptedPassword = getMd5(password);
 
-           if (isCheck.equals(password) && userType==0) {
+           // if password matches
+           if (isCheck.equals(encryptedPassword) && userType==0) {
+
 
                LocalDateTime createdAt = LocalDateTime.now();
+
+               //valid upto 10 min from being created
                LocalDateTime validUpto = createdAt.plusMinutes(10);
+
+               //unique user token(id)
                String userToken = createdAt + String.valueOf(id);
 
                UserTokenDetails userTokenDetails = new UserTokenDetails(userToken,id,createdAt,validUpto);
+
+               //saving user token details
                saveTokenDetails(userTokenDetails);
 
                return LoginResponse.buildRes("Login Successful",userTokenDetails.getUserToken() ,"Success");
-           } else {
+           }
+
+           else {
                return LoginResponse.buildRes("Invalid Student Id / Password",null, "Login Failed");
            }
        }
@@ -182,30 +277,37 @@ public class ServiceClass {
    }
 
 
+
     public CourseViewResponse coursesViewAfterLogin(StudentCred studentCred) throws Exception
    {
        try {
-           Integer id = studentCred.getId();
-           String password = studentCred.getPassword();
-           String isCheck = userInfoDao.getPassword(id);
-           Integer userType = userInfoDao.getUserType(id);
+
+           String encryptedPassword = getMd5(studentCred.getPassword());
+           String isCheck = userInfoDao.getPassword(studentCred.getId());
+           Integer userType = userInfoDao.getUserType(studentCred.getId());
 
            List<Object> list = new ArrayList<>();
            List<CourseNameId>courseDetails = new ArrayList<>();
 
-           if (isCheck.equals(password) && userType==0) {
+           //validation check
+           if (isCheck.equals(encryptedPassword) && userType==0) {
+
+               //get all the courses from the database dao
                list = courseDetailDao.getAllCourses();
+
                for(int i=0;i<list.size();i++){
+
                    Integer courseId = (Integer) ((Object[])(list.get(i)))[0];
                    String courseName = (String) ((Object[])(list.get(i)))[1];
                    CourseNameId courseNameId = new CourseNameId(courseId,courseName);
 
+                   //saving each courseName with CourseId
                    courseDetails.add(courseNameId);
                }
 
                return new CourseViewResponse("success", true, courseDetails);
            } else {
-               return new CourseViewResponse("failed", false, courseDetails);
+               return new CourseViewResponse("Invalid User Credentials", false, courseDetails);
            }
        }
        catch (Exception e){
@@ -220,8 +322,10 @@ public class ServiceClass {
 
             Integer studentId = getStudentCourseCred.getStudentId();
 
-            // Is courses are already registered with given studentId
+            // check whether courses are already registered with given studentId
             boolean isIdExist = studentCourseInfoDao.isIdAlreadyExist(studentId);
+
+            //for sending mail
             String email = userInfoDao.getUserEmail(getStudentCourseCred.getStudentId());
             String fullName = userInfoDao.name(getStudentCourseCred.getStudentId());
 
@@ -229,10 +333,12 @@ public class ServiceClass {
             List<String> courses = new ArrayList<>();
 
             if(isIdExist) {
-                return new CourseRegisterResponse("Courses already registered", "Failed", courses);
+                return new CourseRegisterResponse("Courses are already registered", "Failed", courses);
             }
 
             else {
+
+                //getting all the values from the request ( id taken)
                 Integer[] courseId = getStudentCourseCred.getCourseId();
                 Date date = getStudentCourseCred.getDateOfRegistration();
                 Integer validityInDays = getStudentCourseCred.getValidityInDays();
@@ -240,34 +346,24 @@ public class ServiceClass {
 
 
                 for (int i = 0; i < courseId.length; i++) {
-                    Integer currentCourseId = courseId[i];
-                    String course = courseDetailDao.getCourse(currentCourseId);
 
+                    Integer currentCourseId = courseId[i];
+
+                    //course name corresponding to that courseId
+                    String courseName = courseDetailDao.getCourse(currentCourseId);
+
+                    //saving into database
                     studentCourseInfoDao.save(new StudentCourseInfo(studentId, currentCourseId, date, validityInDays));
 
-                    courseString=courseString+" \n"+course;
-                    courses.add(course);
+                    String n = String.valueOf(i+1);
+                    courseString =  courseString  + n + ".   " + courseName + " \n";
+
+                    //for response purpose
+                    courses.add(courseName);
                 }
 
-                //create a mail sender
-                JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-                javaMailSender.setHost("smtp.mailtrap.io");
-                javaMailSender.setPort(2525);
-                javaMailSender.setUsername("9d82e83c1d2745");
-                javaMailSender.setPassword("9b0625cba34c51");
-
-
-                //create a email instance
-                SimpleMailMessage mailMessage = new SimpleMailMessage();
-                mailMessage.setFrom("university.portal@gmail.com");
-                mailMessage.setTo(email);
-                mailMessage.setSubject("Courses Registered Successfully");
-                mailMessage.setText("Hi "+fullName+" ,\nYou have successfully registered the following courses.\n"+courseString+"" +
-                        "\n\n\n\nThanks and Regards");
-
-                //send mail
-                javaMailSender.send(mailMessage);
-
+                //mail sender
+                sendMailAfterCourseRegister(email,fullName,courseString);
 
                 return new CourseRegisterResponse("Courses Saved", "success", courses);
             }
@@ -279,23 +375,28 @@ public class ServiceClass {
    }
 
 
+   @Cacheable(value = "studentCourseListDetails")
     public ViewListResponse CourseListDetails(StudentCred studentCred) throws Exception
     {
         try {
             Integer id = studentCred.getId();
             String password = studentCred.getPassword();
+            String encryptedPassword = getMd5(password);
 
             String passwordCheck = userInfoDao.getPassword(id);
 
             List<Object> listOfStudentCourseInfo = new ArrayList<>();
             List<CourseList>allCourseList = new ArrayList<>();
 
-            if (password.equals(passwordCheck)) {
+            //password check
+            if (encryptedPassword.equals(passwordCheck)) {
 
                 listOfStudentCourseInfo = studentCourseInfoDao.getStudentIdNameDate(id);
 
+
                 if(listOfStudentCourseInfo.size()==0)
                     return new ViewListResponse("Not registered any Course","failed", allCourseList);
+
 
                  for(int i=0;i<listOfStudentCourseInfo.size();i++)
                  {
@@ -305,6 +406,8 @@ public class ServiceClass {
                      String courseName = (String)((Object[]) listOfStudentCourseInfo.get(i))[2];
 
                     CourseList currentCourseList =  new CourseList(courseId,date,courseName);
+
+                    //add each courseList(id,date,courseName) into list
                     allCourseList.add(currentCourseList);
 
                 }
@@ -325,11 +428,13 @@ public class ServiceClass {
     public AdminLoginResponse AdminLogin(Integer id,String password) throws Exception{
 
         try {
+
            String isCheckPassword = userInfoDao.getPassword(id);//exception may occur
+           String encryptPassword = getMd5(password);
 
             Integer userType = userInfoDao.getUserType(id);
 
-            if(isCheckPassword.equals(password) && userType==1){
+            if(isCheckPassword.equals(encryptPassword) && userType==1){
                 return new AdminLoginResponse("Admin Login Successful","success");
             }
             else{
@@ -346,21 +451,28 @@ public class ServiceClass {
     {
 
         String isCheckPassword = userInfoDao.getPassword(id);
+        String encryptPassword = getMd5(password);
+
         List<AdminView> allStudentDetails = new ArrayList<>();
         Integer userType = userInfoDao.getUserType(id);
 
 
-        if(isCheckPassword.equals(password) && userType==1) {
+        if(isCheckPassword.equals(encryptPassword) && userType==1) {
+
+
             List<Object> adminView = studentCourseInfoDao.adminViewAllStudentInfo();
 
             try {
 
                 for (int i = 0; i < adminView.size(); i++) {
+
                     Integer studentId = (Integer) ((Object[]) adminView.get(i))[0];
                     Integer courseId = (Integer) ((Object[]) adminView.get(i))[1];
                     String courseName = (String) ((Object[]) adminView.get(i))[2];
 
                     AdminView currentAdminView = new AdminView(studentId, courseId, courseName);
+
+                    //add all the details of each student (response)
                     allStudentDetails.add(currentAdminView);
                 }
 

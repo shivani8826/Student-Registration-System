@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
+@Transactional
 public class UserInfoDao {
 
     @Autowired
@@ -27,6 +28,7 @@ public class UserInfoDao {
         session.save(userInfo);
         session.close();
     }
+
 
     public boolean emailExistOrNot(String email) throws Exception{
 
@@ -76,6 +78,7 @@ public class UserInfoDao {
     }
 
 
+
     public String getUserEmail(Integer id)
     {
         Session session = this.sessionFactory.openSession();
@@ -98,7 +101,7 @@ public class UserInfoDao {
         String firstName = userInfo.getFirstName();
         String lastName = userInfo.getLastName();
         session.close();
-        return firstName+lastName;
+        return firstName+" "+lastName;
     }
 
 }

@@ -1,6 +1,5 @@
 package com.helper.controller;
 
-import com.helper.MailSender.EmailConfigure;
 import com.helper.dto.response.ViewListResponse;
 import com.helper.dto.request.StudentCourseCred;
 import com.helper.dto.request.StudentCred;
@@ -8,6 +7,7 @@ import com.helper.dto.response.*;
 import com.helper.entity.UserInfo;
 import com.helper.service.ServiceClass;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -24,6 +24,8 @@ public class StudentController {
     private ServiceClass serviceClass;
 
 
+    /****************************************** User Onboard *****************************************/
+
     @RequestMapping(value = "/user/onboard", method = RequestMethod.POST)
     @ResponseBody
     public OnboardResponse OnboardUser(@RequestParam() String email, @RequestParam() String first, @RequestParam() String last,
@@ -32,6 +34,9 @@ public class StudentController {
     }
 
 
+
+
+    /*************************************** User Login *********************************************/
 
 
     @RequestMapping(value = "/user/login", method = RequestMethod.POST) //by default choose get
@@ -44,23 +49,33 @@ public class StudentController {
 
 
 
+    /********************************** User View All course List  ************************************/
+
+
     @RequestMapping(value = "/courses/view", method = RequestMethod.POST)
     public @ResponseBody
     CourseViewResponse viewCourses(@RequestHeader(value = "validUpto") String validUptoStr, @RequestBody StudentCred studentCred) throws Exception {
 
-        LocalDateTime validUpto = LocalDateTime.parse(validUptoStr);
 
+        LocalDateTime validUpto = LocalDateTime.parse(validUptoStr);
         LocalDateTime currentDateTime = LocalDateTime.now();
 
+        //if validUpto is less than currentDate Time
         if (validUpto.isAfter(currentDateTime)) {
             return serviceClass.coursesViewAfterLogin(studentCred);
-        } else {
+        }
+
+        else {
             List<CourseNameId> data = new ArrayList<>();
             return new CourseViewResponse("User Token expired! Login again", false, data);
         }
 
     }
 
+
+
+
+    /********************************** User Course Register  *****************************************/
 
 
     @RequestMapping(value = "user/course/register",method = RequestMethod.POST)
@@ -71,6 +86,7 @@ public class StudentController {
 
 
 
+    /********************************* User All Registered Courses List ********************************/
 
     @RequestMapping(value = "user/course/list",method = RequestMethod.POST)
     public @ResponseBody

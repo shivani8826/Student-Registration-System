@@ -18,6 +18,10 @@ public class AdminController {
     @Autowired
     ServiceClass serviceClass;
 
+
+
+    /*********************************   Admin Login   ***************************************/
+
     @RequestMapping(value = "admin/login",method = RequestMethod.POST)
     public @ResponseBody
     AdminLoginResponse LoginAdmin(@RequestParam Integer id , @RequestParam String password) throws Exception
@@ -26,6 +30,9 @@ public class AdminController {
     }
 
 
+
+
+    /*************************** Admin view All StudentsInfo **********************************/
 
     @RequestMapping(value = "admin/viewAll",method = RequestMethod.POST)
     public @ResponseBody

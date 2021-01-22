@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Cacheable;
 import java.util.List;
 
 @Repository
@@ -17,6 +18,7 @@ public class CourseDetailDao {
     @Autowired
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
+
 
      public List<Object> getAllCourses()
      {

@@ -20,14 +20,10 @@ public class UserTokenDetails {
     Integer userId;
 
     @Column(name = "created_at")
-    //@Temporal(TemporalType.TIMESTAMP)
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime  createdAt;
- //   Date createdAt;
+
 
     @Column(name = "valid_upto")
-   // @Temporal(TemporalType.TIMESTAMP)
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime validUpto;
   //  Date validUpto;
 
