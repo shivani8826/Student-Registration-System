@@ -1,20 +1,17 @@
 package com.helper.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.helper.entity.CourseDetail;
-
 import java.io.Serializable;
 import java.util.List;
 
 
-public class CourseViewResponse implements Serializable {
+public class CourseViewResponse {
 
     String message;
     boolean success;
-    List<CourseNameId> data;
+    List<StudentCourseDetail> data;
 
 
-    public CourseViewResponse(String message, boolean success, List<CourseNameId> data) {
+    public CourseViewResponse(String message, boolean success, List<StudentCourseDetail> data) {
         this.message = message;
         this.success = success;
         this.data = data;
@@ -40,11 +37,11 @@ public class CourseViewResponse implements Serializable {
         this.success = success;
     }
 
-    public List<CourseNameId> getData() {
+    public List<StudentCourseDetail> getData() {
         return data;
     }
 
-    public void setData(List<CourseNameId> data) {
+    public void setData(List<StudentCourseDetail> data) {
         this.data = data;
     }
 }

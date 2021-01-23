@@ -1,5 +1,6 @@
 package com.helper.dao;
 
+import com.helper.entity.CourseDetail;
 import com.helper.entity.UserInfo;
 import com.helper.entity.UserTokenDetails;
 import org.hibernate.*;
@@ -14,7 +15,6 @@ import javax.management.Query;
 import java.time.LocalDateTime;
 
 @Repository
-@Transactional
 public class UserTokenDetailsDao {
 
     @Autowired
@@ -38,6 +38,19 @@ public class UserTokenDetailsDao {
             throw e;
 
         }
+    }
+
+
+    public LocalDateTime getValidUpto(String userToken)
+    {
+        Session session = this.sessionFactory.openSession();
+        UserTokenDetails userTokenDetails = (UserTokenDetails) session.get(UserTokenDetails.class,userToken);
+       /* if(userTokenDetails==null)
+            return null;
+        */
+        LocalDateTime localDateTime = userTokenDetails.getValidUpto();
+        session.close();
+        return localDateTime;
     }
 
 

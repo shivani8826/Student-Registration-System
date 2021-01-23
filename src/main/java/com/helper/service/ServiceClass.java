@@ -9,9 +9,7 @@ import com.helper.entity.StudentCourseInfo;
 import com.helper.entity.UserInfo;
 import com.helper.entity.UserTokenDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
@@ -173,6 +171,15 @@ public class ServiceClass {
     }
 
 
+    // return valid upto based on user token
+    public LocalDateTime validUptoBasedOnUserToken(String userToken)
+    {
+        return userTokenDetailsDao.getValidUpto(userToken);
+    }
+
+
+
+
     public void save(UserInfo userInfo) {
         try {
 
@@ -190,7 +197,7 @@ public class ServiceClass {
             userTokenDetailsDao.save(userTokenDetails);
         }
         catch (Exception e){
-            System.out.println(e);
+            System.out.println("Something w");
         }
     }
 
@@ -257,7 +264,10 @@ public class ServiceClass {
                LocalDateTime validUpto = createdAt.plusMinutes(10);
 
                //unique user token(id)
-               String userToken = createdAt + String.valueOf(id);
+               String createdAtString = createdAt.toString();
+               String partialToken = createdAtString.replaceAll("[-:.]","");
+
+               String userToken = partialToken + String.valueOf(id);
 
                UserTokenDetails userTokenDetails = new UserTokenDetails(userToken,id,createdAt,validUpto);
 
@@ -287,7 +297,7 @@ public class ServiceClass {
            Integer userType = userInfoDao.getUserType(studentCred.getId());
 
            List<Object> list = new ArrayList<>();
-           List<CourseNameId>courseDetails = new ArrayList<>();
+           List<StudentCourseDetail>courseDetails = new ArrayList<>();
 
            //validation check
            if (isCheck.equals(encryptedPassword) && userType==0) {
@@ -299,10 +309,10 @@ public class ServiceClass {
 
                    Integer courseId = (Integer) ((Object[])(list.get(i)))[0];
                    String courseName = (String) ((Object[])(list.get(i)))[1];
-                   CourseNameId courseNameId = new CourseNameId(courseId,courseName);
+                   StudentCourseDetail studentCourseDetail = new StudentCourseDetail(courseId,courseName);
 
                    //saving each courseName with CourseId
-                   courseDetails.add(courseNameId);
+                   courseDetails.add(studentCourseDetail);
                }
 
                return new CourseViewResponse("success", true, courseDetails);
@@ -324,10 +334,6 @@ public class ServiceClass {
 
             // check whether courses are already registered with given studentId
             boolean isIdExist = studentCourseInfoDao.isIdAlreadyExist(studentId);
-
-            //for sending mail
-            String email = userInfoDao.getUserEmail(getStudentCourseCred.getStudentId());
-            String fullName = userInfoDao.name(getStudentCourseCred.getStudentId());
 
 
             List<String> courses = new ArrayList<>();
@@ -362,8 +368,14 @@ public class ServiceClass {
                     courses.add(courseName);
                 }
 
+
+                //for sending mail
+                String email = userInfoDao.getUserEmail(getStudentCourseCred.getStudentId());
+                String fullName = userInfoDao.name(getStudentCourseCred.getStudentId());
+
                 //mail sender
                 sendMailAfterCourseRegister(email,fullName,courseString);
+                System.out.println("Mail Sent!!");
 
                 return new CourseRegisterResponse("Courses Saved", "success", courses);
             }
@@ -375,7 +387,7 @@ public class ServiceClass {
    }
 
 
-   @Cacheable(value = "studentCourseListDetails")
+  // @Cacheable(key="#studentCred",value = "courseListDetails")
     public ViewListResponse CourseListDetails(StudentCred studentCred) throws Exception
     {
         try {
@@ -386,16 +398,17 @@ public class ServiceClass {
             String passwordCheck = userInfoDao.getPassword(id);
 
             List<Object> listOfStudentCourseInfo = new ArrayList<>();
-            List<CourseList>allCourseList = new ArrayList<>();
+            List<StudentRegisteredCourseDetail> studentRegisteredCourseDetail = new ArrayList<>();
 
             //password check
             if (encryptedPassword.equals(passwordCheck)) {
 
+                //all entries from the db
                 listOfStudentCourseInfo = studentCourseInfoDao.getStudentIdNameDate(id);
 
 
                 if(listOfStudentCourseInfo.size()==0)
-                    return new ViewListResponse("Not registered any Course","failed", allCourseList);
+                    return new ViewListResponse("Not registered any Course","failed", studentRegisteredCourseDetail);
 
 
                  for(int i=0;i<listOfStudentCourseInfo.size();i++)
@@ -405,17 +418,17 @@ public class ServiceClass {
                      Date date = (Date) ((Object[]) listOfStudentCourseInfo.get(i))[1];
                      String courseName = (String)((Object[]) listOfStudentCourseInfo.get(i))[2];
 
-                    CourseList currentCourseList =  new CourseList(courseId,date,courseName);
+                    StudentRegisteredCourseDetail currentStudentRegisteredCourseDetail =  new StudentRegisteredCourseDetail(courseId,date,courseName);
 
                     //add each courseList(id,date,courseName) into list
-                    allCourseList.add(currentCourseList);
+                    studentRegisteredCourseDetail.add(currentStudentRegisteredCourseDetail);
 
                 }
 
-                return new ViewListResponse("Data Extracted","success", allCourseList);
+                return new ViewListResponse("Data Extracted","success", studentRegisteredCourseDetail);
 
             } else {
-                return new ViewListResponse("Invalid Id / Password","failed", allCourseList);
+                return new ViewListResponse("Invalid Id / Password","failed", studentRegisteredCourseDetail);
             }
         }
         catch (Exception e){

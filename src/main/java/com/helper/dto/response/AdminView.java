@@ -8,7 +8,7 @@ public class AdminView {
 
     Integer studentId;
     String course_Name;
-  //  List<CourseNameId> courseNameIdList=new ArrayList<>();
+  //  List<StudentCourseDetail> courseNameIdList=new ArrayList<>();
     Integer courseId;
 
     public AdminView(Integer studentId,  Integer courseId, String course_Name) {

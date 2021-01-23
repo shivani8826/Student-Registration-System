@@ -7,7 +7,6 @@ import com.helper.dto.response.*;
 import com.helper.entity.UserInfo;
 import com.helper.service.ServiceClass;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -28,9 +27,9 @@ public class StudentController {
 
     @RequestMapping(value = "/user/onboard", method = RequestMethod.POST)
     @ResponseBody
-    public OnboardResponse OnboardUser(@RequestParam() String email, @RequestParam() String first, @RequestParam() String last,
+    public OnboardResponse OnboardUser(@RequestParam() String email, @RequestParam() String firstName, @RequestParam() String lastName,
                                        @RequestParam() String password) throws Exception{
-        return serviceClass.saveDetails(new UserInfo(email, first, last, password,0));
+        return serviceClass.saveDetails(new UserInfo(email, firstName, lastName, password,0));
     }
 
 
@@ -54,10 +53,12 @@ public class StudentController {
 
     @RequestMapping(value = "/courses/view", method = RequestMethod.POST)
     public @ResponseBody
-    CourseViewResponse viewCourses(@RequestHeader(value = "validUpto") String validUptoStr, @RequestBody StudentCred studentCred) throws Exception {
+    CourseViewResponse viewCourses(@RequestHeader(value = "userToken") String userToken, @RequestBody StudentCred studentCred) throws Exception {
 
 
-        LocalDateTime validUpto = LocalDateTime.parse(validUptoStr);
+        // get validUpto using user token
+        LocalDateTime validUpto = serviceClass.validUptoBasedOnUserToken(userToken);
+
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         //if validUpto is less than currentDate Time
@@ -66,7 +67,7 @@ public class StudentController {
         }
 
         else {
-            List<CourseNameId> data = new ArrayList<>();
+            List<StudentCourseDetail> data = new ArrayList<>();
             return new CourseViewResponse("User Token expired! Login again", false, data);
         }
 
@@ -101,4 +102,6 @@ public class StudentController {
 
 
 }
+
+
 

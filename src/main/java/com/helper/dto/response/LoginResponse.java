@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 
 
-public class LoginResponse implements Serializable {
+public class LoginResponse {
 
 
     String message;

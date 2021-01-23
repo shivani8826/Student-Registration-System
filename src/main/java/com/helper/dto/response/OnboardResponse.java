@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 
 
-public class   OnboardResponse implements Serializable {
+public class   OnboardResponse  {
 
     private Integer id;
     private String message;

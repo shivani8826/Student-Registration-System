@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-@Transactional
 public class UserInfoDao {
 
     @Autowired
@@ -44,7 +43,7 @@ public class UserInfoDao {
         }
         catch (Exception e){
             System.out.println("Something went wrong");
-            return false;
+            throw e;
         }
     }
 

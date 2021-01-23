@@ -7,11 +7,11 @@ import java.io.Serializable;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ViewListResponse implements Serializable {
+public class ViewListResponse  {
 
     String success;
     String message;
-    List<CourseList> courseList;
+    List<StudentRegisteredCourseDetail> studentRegisteredCourseDetail;
 
 
     public ViewListResponse() {
@@ -19,10 +19,10 @@ public class ViewListResponse implements Serializable {
     }
 
 
-    public ViewListResponse(String success, String message, List<CourseList> courseList) {
+    public ViewListResponse(String success, String message, List<StudentRegisteredCourseDetail> studentRegisteredCourseDetail) {
         this.success = success;
         this.message = message;
-        this.courseList = courseList;
+        this.studentRegisteredCourseDetail = studentRegisteredCourseDetail;
     }
 
 
@@ -42,12 +42,12 @@ public class ViewListResponse implements Serializable {
         this.message = message;
     }
 
-    public List<CourseList> getCourseList() {
-        return courseList;
+    public List<StudentRegisteredCourseDetail> getCourseList() {
+        return studentRegisteredCourseDetail;
     }
 
-    public void setCourseList(List<CourseList> courseList) {
-        this.courseList = courseList;
+    public void setCourseList(List<StudentRegisteredCourseDetail> studentRegisteredCourseDetail) {
+        this.studentRegisteredCourseDetail = studentRegisteredCourseDetail;
     }
 }
 
