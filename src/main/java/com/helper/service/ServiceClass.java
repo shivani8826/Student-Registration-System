@@ -1,9 +1,9 @@
 package com.helper.service;
 
+import com.helper.dto.request.UserCred;
 import com.helper.dto.response.ViewListResponse;
 import com.helper.dao.*;
 import com.helper.dto.request.StudentCourseCred;
-import com.helper.dto.request.StudentCred;
 import com.helper.dto.response.*;
 import com.helper.entity.StudentCourseInfo;
 import com.helper.entity.UserInfo;
@@ -110,8 +110,7 @@ public class ServiceClass {
 
     /************************ Send Mail After student Registration **********************/
 
-    void sendOnboardMailMessage(String email , String userName , Integer userId)
-    {
+    void sendOnboardMailMessage(String email , String userName , Integer userId) {
         //create a mail sender
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.gmail.com");
@@ -130,13 +129,14 @@ public class ServiceClass {
         mailMessage.setFrom("university.portal@gmail.com");
         mailMessage.setTo(email);
         mailMessage.setSubject("IGDTUW: Account Successfully Created ");
-        mailMessage.setText("Dear "+userName+",\n\nWelcome in our University.\nYou have successfully registered on our portal !!\n\nYour Student Id is: "+userId+"\nYou can now login with this Student Id.\n\n\n\n Thanks and Regards");
+        mailMessage.setText("Dear " + userName + ",\n\nWelcome in our University.\nYou have successfully registered on our portal !!\n\nYour Student Id is: " + userId + "\nYou can now login with this Student Id.\n\n\n\n Thanks and Regards");
 
         //send mail
         javaMailSender.send(mailMessage);
 
 
     }
+
 
 
 
@@ -183,7 +183,7 @@ public class ServiceClass {
     public void save(UserInfo userInfo) {
         try {
 
-            userInfoDao.save(userInfo);
+            userInfoDao.saveUserDetails(userInfo);
         }
         catch (Exception e){
             System.out.println(e);
@@ -246,9 +246,13 @@ public class ServiceClass {
     }
 
 
-    public LoginResponse isLogin(Integer id, String password ) throws Exception
+    public LoginResponse isLogin(UserCred userCred) throws Exception
    {
         try {
+
+           Integer id = userCred.getId();
+           String password = userCred.getPassword();
+
 
            String isCheck = userInfoDao.getPassword(id);
            int userType = userInfoDao.getUserType(id);
@@ -288,19 +292,12 @@ public class ServiceClass {
 
 
 
-    public CourseViewResponse coursesViewAfterLogin(StudentCred studentCred) throws Exception
+    public CourseViewResponse coursesViewAfterLogin() throws Exception
    {
        try {
 
-           String encryptedPassword = getMd5(studentCred.getPassword());
-           String isCheck = userInfoDao.getPassword(studentCred.getId());
-           Integer userType = userInfoDao.getUserType(studentCred.getId());
-
            List<Object> list = new ArrayList<>();
            List<StudentCourseDetail>courseDetails = new ArrayList<>();
-
-           //validation check
-           if (isCheck.equals(encryptedPassword) && userType==0) {
 
                //get all the courses from the database dao
                list = courseDetailDao.getAllCourses();
@@ -316,10 +313,7 @@ public class ServiceClass {
                }
 
                return new CourseViewResponse("success", true, courseDetails);
-           } else {
-               return new CourseViewResponse("Invalid User Credentials", false, courseDetails);
            }
-       }
        catch (Exception e){
            throw e;
        }
@@ -350,7 +344,6 @@ public class ServiceClass {
                 Integer validityInDays = getStudentCourseCred.getValidityInDays();
                 String courseString="";
 
-
                 for (int i = 0; i < courseId.length; i++) {
 
                     Integer currentCourseId = courseId[i];
@@ -359,7 +352,7 @@ public class ServiceClass {
                     String courseName = courseDetailDao.getCourse(currentCourseId);
 
                     //saving into database
-                    studentCourseInfoDao.save(new StudentCourseInfo(studentId, currentCourseId, date, validityInDays));
+                    studentCourseInfoDao.save(new StudentCourseInfo(studentId, currentCourseId, date, validityInDays,LocalDateTime.now()));
 
                     String n = String.valueOf(i+1);
                     courseString =  courseString  + n + ".   " + courseName + " \n";
@@ -387,12 +380,12 @@ public class ServiceClass {
    }
 
 
-  // @Cacheable(key="#studentCred",value = "courseListDetails")
-    public ViewListResponse CourseListDetails(StudentCred studentCred) throws Exception
+  // @Cacheable(key="#userCred",value = "courseListDetails")
+    public ViewListResponse CourseListDetails(UserCred userCred) throws Exception
     {
         try {
-            Integer id = studentCred.getId();
-            String password = studentCred.getPassword();
+            Integer id = userCred.getId();
+            String password = userCred.getPassword();
             String encryptedPassword = getMd5(password);
 
             String passwordCheck = userInfoDao.getPassword(id);
@@ -415,15 +408,22 @@ public class ServiceClass {
                  {
                      //order will be same as mentioned in query.
                      Integer courseId=(Integer)((Object[]) listOfStudentCourseInfo.get(i))[0];
+
                      Date date = (Date) ((Object[]) listOfStudentCourseInfo.get(i))[1];
+
+                     String dateFinal = date.toString();
+
+                     //LocalDateTime dateFinal =  timeStamp.toLocalDateTime().toLocalDate();
                      String courseName = (String)((Object[]) listOfStudentCourseInfo.get(i))[2];
 
-                    StudentRegisteredCourseDetail currentStudentRegisteredCourseDetail =  new StudentRegisteredCourseDetail(courseId,date,courseName);
+                    StudentRegisteredCourseDetail currentStudentRegisteredCourseDetail =  new StudentRegisteredCourseDetail(courseId,dateFinal,courseName);
+
 
                     //add each courseList(id,date,courseName) into list
                     studentRegisteredCourseDetail.add(currentStudentRegisteredCourseDetail);
 
                 }
+
 
                 return new ViewListResponse("Data Extracted","success", studentRegisteredCourseDetail);
 
@@ -438,9 +438,12 @@ public class ServiceClass {
     }
 
 
-    public AdminLoginResponse AdminLogin(Integer id,String password) throws Exception{
+    public AdminLoginResponse AdminLogin(UserCred userCred) throws Exception{
 
         try {
+
+           Integer id = userCred.getId();
+           String password = userCred.getPassword();
 
            String isCheckPassword = userInfoDao.getPassword(id);//exception may occur
            String encryptPassword = getMd5(password);
@@ -460,8 +463,11 @@ public class ServiceClass {
     }
 
 
-    public AdminViewResponse AdminViewAllCourses(Integer id,String password) throws Exception
+    public AdminViewResponse AdminViewAllCourses(UserCred userCred) throws Exception
     {
+
+        Integer id = userCred.getId();
+        String password = userCred.getPassword();
 
         String isCheckPassword = userInfoDao.getPassword(id);
         String encryptPassword = getMd5(password);

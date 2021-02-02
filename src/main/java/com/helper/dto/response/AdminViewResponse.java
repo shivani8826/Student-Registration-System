@@ -1,7 +1,5 @@
 package com.helper.dto.response;
 
-import com.helper.dto.request.AdminCred;
-
 import java.util.List;
 
 public class AdminViewResponse {

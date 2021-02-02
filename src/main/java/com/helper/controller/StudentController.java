@@ -1,8 +1,9 @@
 package com.helper.controller;
 
+import com.helper.dto.request.OnboardUserCred;
+import com.helper.dto.request.UserCred;
 import com.helper.dto.response.ViewListResponse;
 import com.helper.dto.request.StudentCourseCred;
-import com.helper.dto.request.StudentCred;
 import com.helper.dto.response.*;
 import com.helper.entity.UserInfo;
 import com.helper.service.ServiceClass;
@@ -27,9 +28,14 @@ public class StudentController {
 
     @RequestMapping(value = "/user/onboard", method = RequestMethod.POST)
     @ResponseBody
-    public OnboardResponse OnboardUser(@RequestParam() String email, @RequestParam() String firstName, @RequestParam() String lastName,
-                                       @RequestParam() String password) throws Exception{
-        return serviceClass.saveDetails(new UserInfo(email, firstName, lastName, password,0));
+    public OnboardResponse OnboardUser(@RequestBody OnboardUserCred onboardUserCred) throws Exception{
+
+        String email = onboardUserCred.getEmail();
+        String firstName = onboardUserCred.getFirstName();
+        String lastName = onboardUserCred.getLastName();
+        String password = onboardUserCred.getPassword();
+
+        return serviceClass.saveDetails(new UserInfo(email, firstName, lastName, password,0,LocalDateTime.now(),LocalDateTime.now()));
     }
 
 
@@ -40,8 +46,8 @@ public class StudentController {
 
     @RequestMapping(value = "/user/login", method = RequestMethod.POST) //by default choose get
     @ResponseBody
-    public LoginResponse loginUser(@RequestParam() int id, @RequestParam() String password) throws Exception {
-        return serviceClass.isLogin(id, password);
+    public LoginResponse loginUser(@RequestBody UserCred userCred) throws Exception {
+        return serviceClass.isLogin(userCred);
     }
 
 
@@ -50,10 +56,9 @@ public class StudentController {
 
     /********************************** User View All course List  ************************************/
 
-
-    @RequestMapping(value = "/courses/view", method = RequestMethod.POST)
+    @RequestMapping(value = "/courses/view", method = RequestMethod.GET)
     public @ResponseBody
-    CourseViewResponse viewCourses(@RequestHeader(value = "userToken") String userToken, @RequestBody StudentCred studentCred) throws Exception {
+    CourseViewResponse viewCourses(@RequestHeader(value = "userToken") String userToken) throws Exception {
 
 
         // get validUpto using user token
@@ -63,7 +68,7 @@ public class StudentController {
 
         //if validUpto is less than currentDate Time
         if (validUpto.isAfter(currentDateTime)) {
-            return serviceClass.coursesViewAfterLogin(studentCred);
+            return serviceClass.coursesViewAfterLogin();
         }
 
         else {
@@ -86,19 +91,14 @@ public class StudentController {
     }
 
 
-
     /********************************* User All Registered Courses List ********************************/
 
     @RequestMapping(value = "user/course/list",method = RequestMethod.POST)
     public @ResponseBody
-    ViewListResponse CoursesListDetails(@RequestBody StudentCred studentCred) throws Exception
+    ViewListResponse CoursesListDetails(@RequestBody UserCred userCred) throws Exception
     {
-         return serviceClass.CourseListDetails(studentCred);
+         return serviceClass.CourseListDetails(userCred);
     }
-
-
-
-
 
 
 }

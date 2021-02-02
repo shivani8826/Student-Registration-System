@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="./web-resources/style.css">
-    <script type="text/javascript" src="./validate.js"></script>
+        <script type="text/javascript" src="./validate.js"></script>
     <title>Course Register</title>
     <style>
         .container {

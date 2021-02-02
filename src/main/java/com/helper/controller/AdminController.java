@@ -1,9 +1,8 @@
 package com.helper.controller;
 
-import com.helper.dto.request.AdminCred;
+import com.helper.dto.request.UserCred;
 import com.helper.dto.response.AdminLoginResponse;
 import com.helper.dto.response.AdminViewResponse;
-import com.helper.dto.response.LoginResponse;
 import com.helper.service.ServiceClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,9 +23,10 @@ public class AdminController {
 
     @RequestMapping(value = "admin/login",method = RequestMethod.POST)
     public @ResponseBody
-    AdminLoginResponse LoginAdmin(@RequestParam Integer id , @RequestParam String password) throws Exception
+  //  @RequestParam Integer id , @RequestParam String password
+    AdminLoginResponse LoginAdmin(@RequestBody UserCred userCred) throws Exception
     {
-        return serviceClass.AdminLogin(id,password);
+        return serviceClass.AdminLogin(userCred);
     }
 
 
@@ -36,9 +36,9 @@ public class AdminController {
 
     @RequestMapping(value = "admin/viewAll",method = RequestMethod.POST)
     public @ResponseBody
-    AdminViewResponse ViewAllStudentsInfo(@RequestParam Integer id , @RequestParam String password ) throws Exception
+    AdminViewResponse ViewAllStudentsInfo(@RequestBody UserCred userCred) throws Exception
     {
-        return serviceClass.AdminViewAllCourses(id,password);
+        return serviceClass.AdminViewAllCourses(userCred);
     }
 
 

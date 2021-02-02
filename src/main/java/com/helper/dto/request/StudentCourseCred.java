@@ -3,16 +3,17 @@ package com.helper.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 public class StudentCourseCred {
 
-    // localDate dateOfReg;
+
     Integer studentId;
     Integer[] courseId;
 
-    @JsonFormat(pattern = "mm-dd-yyyy")
+
     Date dateOfRegistration;
     Integer validityInDays;
 

@@ -3,6 +3,7 @@ package com.helper.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -25,11 +26,15 @@ public class StudentCourseInfo {
     @Column(name = "validity_in_days")
     Integer validityInDays;
 
-    public StudentCourseInfo(Integer studentId, Integer courseId, Date dateOfRegistration, Integer validityInDays) {
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
+
+    public StudentCourseInfo(Integer studentId, Integer courseId, Date dateOfRegistration, Integer validityInDays, LocalDateTime createdAt) {
         this.studentId = studentId;
         this.courseId = courseId;
         this.dateOfRegistration = dateOfRegistration;
         this.validityInDays = validityInDays;
+        this.createdAt = createdAt;
     }
 
     public StudentCourseInfo() {

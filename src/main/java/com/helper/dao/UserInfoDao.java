@@ -22,7 +22,7 @@ public class UserInfoDao {
     @Qualifier("hibernate4AnnotatedSessionFactory")
     private SessionFactory sessionFactory;
 
-    public void save(UserInfo userInfo) throws Exception {
+    public void saveUserDetails(UserInfo userInfo) throws Exception {
         Session session = this.sessionFactory.openSession();
         session.save(userInfo);
         session.close();

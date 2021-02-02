@@ -7,13 +7,13 @@ import java.util.List;
 public class AdminView {
 
     Integer studentId;
-    String course_Name;
+    String courseName;
   //  List<StudentCourseDetail> courseNameIdList=new ArrayList<>();
     Integer courseId;
 
-    public AdminView(Integer studentId,  Integer courseId, String course_Name) {
+    public AdminView(Integer studentId,  Integer courseId, String courseName) {
         this.studentId = studentId;
-        this.course_Name = course_Name;
+        this.courseName = courseName;
         this.courseId = courseId;
     }
 
@@ -31,11 +31,11 @@ public class AdminView {
     }
 
     public String getCourse_Name() {
-        return course_Name;
+        return courseName;
     }
 
     public void setCourse_Name(String course_Name) {
-        this.course_Name = course_Name;
+        this.courseName = course_Name;
     }
 
     public Integer getCourseId() {

@@ -109,9 +109,9 @@
 --%>
         <div class="input-group">
         <div class="form-group row">
-            <label for="email"><b>Email</b><b></b></label>
+           <%-- <label for="email"><b>Email</b><b></b></label>
             <input type="email" placeholder="Enter Email" id="email" class="input-type" name="email" required minlength="5" maxlength="20" />
-
+--%>
             <label for="first"><b>First Name</b></label>
             <input type="text" placeholder="Enter First Name" id="first" class="input-type" name="first" required minlength="5" maxlength="20" />
        </div>

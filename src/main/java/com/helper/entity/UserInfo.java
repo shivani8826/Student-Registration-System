@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -30,15 +31,23 @@ public class UserInfo {
     @Column(name = "user_type")
     private Integer userType;
 
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    LocalDateTime updatedAt;
+
     public UserInfo(){
     }
 
-    public UserInfo(String email, String firstName, String lastName, String password,Integer userType) {
+    public UserInfo(String email, String firstName, String lastName, String password, Integer userType, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.userType=userType;
+        this.userType = userType;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public int getUserId() {

@@ -1,11 +1,11 @@
 com/helper/dto/response/LoginResponse.class
+com/helper/dto/request/OnboardUserCred.class
+com/helper/dto/request/UserCred.class
 com/helper/dao/StudentCourseInfoDao.class
 com/helper/dao/CourseDetailDao.class
 com/helper/entity/StudentCourseInfo.class
 com/helper/dto/response/AdminView.class
-com/helper/dto/request/AdminCred.class
 com/helper/entity/UserInfo.class
-com/helper/dto/request/StudentCred.class
 com/helper/service/ServiceClass.class
 com/helper/dao/UserInfoDao.class
 com/helper/dto/response/StudentRegisteredCourseDetail.class
